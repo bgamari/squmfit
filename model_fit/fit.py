@@ -1,5 +1,8 @@
 from __future__ import division
 from copy import deepcopy
+import numpy as np
+import scipy.optimize
+from .parameter import ParameterSet
 
 class Curve(object):
     def __init__(self, name, model, data, weights=None, **user_args):

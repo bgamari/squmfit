@@ -1,5 +1,6 @@
 from __future__ import division
 import scipy.optimize
+from .parameter import FittedParam
 
 class Model(object):
     def __init__(self, eval, param_names=None):
