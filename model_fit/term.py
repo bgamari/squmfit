@@ -20,7 +20,8 @@ class Model(object):
             The names of the parameters expected by the model. These are passed to eval.
         """
         if param_names is None:
-            raise NotImplemented
+            import inspect
+            param_names = inspect.getargspec(eval).args
         elif isinstance(param_names, str):
             param_names = param_names.split()
         elif not isinstance(param_names, list):
