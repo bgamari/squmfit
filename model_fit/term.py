@@ -1,4 +1,5 @@
 from __future__ import division
+import operator
 import scipy.optimize
 from .parameter import FittedParam
 
@@ -82,6 +83,10 @@ class ModelInst(Term):
 
     def __add__(self, other):
         return OpModel(sum, self, other)
+
+    def __multiply__(self, other):
+        product = lambda args: reduce(operator.mul, args, 1)
+        return OpModel(product, self, other)
         
 class OpModel(Term):
     def __init__(self, op, *operands):
@@ -89,7 +94,7 @@ class OpModel(Term):
         self.operands = operands
 
     def __call__(self, params, **user_args):
-        return self.op(*[model(params, **user_args) for model in self.operands])
+        return self.op([model(params, **user_args) for model in self.operands])
         
     def count_params(self):
         return sum(a.count_params() for a in self.operands)
