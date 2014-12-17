@@ -92,5 +92,5 @@ class OpModel(Term):
         return self.op(*[model(params, **user_args) for model in self.operands])
         
     def count_params(self):
-        return sum(a for a in self.operands)
+        return sum(a.count_params() for a in self.operands)
 
