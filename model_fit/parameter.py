@@ -54,6 +54,8 @@ class ParameterSet(object):
         unset = set(self.params.keys())
         accum = np.empty(shape=len(self.params), dtype='f8')
         for name, param in self.params.iteritems():
+            if values[name] is None:
+                continue
             accum[param.idx] = values[name]
             unset.remove(name)
         if len(unset) > 0:
