@@ -85,6 +85,7 @@ class CurveResult(object):
         self.curve = curve
         self.npoints = len(self.curve.data)
         self.degrees_of_freedom = self.npoints - self.curve.model.count_params()
+        self.fit = self.curve.eval_packed(self.fit_result.fit.param_set._pack(params))
         self.residuals = self.curve.residuals_packed(self.fit_result.fit.param_set._pack(params))
         self.chi_sqr = sum(self.residuals**2)
         self.reduced_chi_sqr = self.chi_sqr / self.degrees_of_freedom
@@ -94,7 +95,6 @@ class FitResult(object):
         self.fit = fit
         self.initial_params = initial_params
         self.params = params
-        print self.params
         self.covar = covar
         self.curves = {curve.name: CurveResult(self, curve)
                        for curve in fit._curves}
