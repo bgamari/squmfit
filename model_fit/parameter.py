@@ -3,10 +3,11 @@ import numpy as np
 
 class FittedParam(object):
     """ A parameter to be fitted to data. """
-    def __init__(self, idx, name=None):
+    def __init__(self, idx, name=None, initial=None):
         # these shalln't be mutated
         self.idx = idx
         self.name = name
+        self.initial = initial
 
 class ParameterSet(object):
     """
@@ -31,13 +32,17 @@ class ParameterSet(object):
             if name not in used:
                 return name
 
-    def param(self, name=None):
+    def initial_params(self):
+        return {name: param.initial
+                for name, param in self.params.items()}
+
+    def param(self, name=None, initial=None):
         if name is not None:
             assert name not in self.params.keys()
         else:
             name = self._unused_name()
         idx = len(self.params)
-        param = FittedParam(idx, name)
+        param = FittedParam(idx, name, initial)
         self.params[name] = param
         return param
         

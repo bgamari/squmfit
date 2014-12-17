@@ -35,8 +35,8 @@ class Fit(object):
         self._curves = []
         self.param_set = ParameterSet()
     
-    def param(self, name=None):
-        return self.param_set.param(name)
+    def param(self, name=None, initial=None):
+        return self.param_set.param(name, initial=None)
 
     def add_curve(self, name, model, data, weights=None, **user_args):
         curve = Curve(name, model, data, weights, **user_args)
@@ -60,8 +60,11 @@ class Fit(object):
         """ Evaluate the weighted model residuals against a dictionary of parameters """
         return self.residuals_packed(self.param_set._pack(params), **user_args)
 
-    def fit(self, params0, **user_args):
-        packed0 = self.param_set._pack(params0)
+    def fit(self, params0=None, **user_args):
+        unpacked = self.param_set.initial_params()
+        if params0 is not None:
+            unpacked.update(params0)
+        packed0 = self.param_set._pack(unpacked)
         def fit_func(p):
             res = self.residuals_packed(p, **user_args)
             return np.hstack(res.values())
