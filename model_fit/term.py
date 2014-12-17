@@ -88,7 +88,7 @@ class OpModel(Term):
         self.op = op
         self.operands = operands
 
-    def __call__(params, **user_args):
+    def __call__(self, params, **user_args):
         return self.op(*[model(params, **user_args) for model in self.operands])
         
     def count_params(self):
