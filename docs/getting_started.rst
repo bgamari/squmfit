@@ -1,5 +1,4 @@
-==============================
 Getting started with model-fit
-==============================
+===============================
 
-TODO.
+`model-fit` is a general-purpose libr

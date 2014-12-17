@@ -3,11 +3,21 @@ import scipy.optimize
 from .parameter import FittedParam
 
 class Model(object):
+    """
+    A Model is a function which can take either fixed arguments or
+    parameters from a parameter vector.
+    """
+
     def __init__(self, eval, param_names=None):
         """
-        Model(eval, param_names=None)
+        Create a Model.
         
-        @eval: a function over some arguments 
+        Parameters:
+        ------------
+        eval : callable
+            The function to evalulate.
+        param_names : list or str, optional
+            The names of the parameters expected by the model. These are passed to eval.
         """
         if param_names is None:
             raise NotImplemented
