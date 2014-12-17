@@ -36,7 +36,7 @@ class Fit(object):
         self.param_set = ParameterSet()
     
     def param(self, name=None, initial=None):
-        return self.param_set.param(name, initial=None)
+        return self.param_set.param(name, initial=initial)
 
     def add_curve(self, name, model, data, weights=None, **user_args):
         curve = Curve(name, model, data, weights, **user_args)
