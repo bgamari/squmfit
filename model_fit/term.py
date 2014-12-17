@@ -80,8 +80,8 @@ class ModelInst(Term):
                 accum += 1
         return accum
 
-    def __add__(self, a, b):
-        return OpModel(sum, a, b)
+    def __add__(self, other):
+        return OpModel(sum, self, other)
         
 class OpModel(Term):
     def __init__(self, op, *operands):
