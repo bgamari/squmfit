@@ -47,6 +47,20 @@ class Term(object):
     def count_params(self):
         raise NotImplemented
 
+    def __add__(self, other):
+        return OpModel(sum, self, other)
+
+    def __radd__(self, other):
+        return OpModel(sum, self, other)
+
+    def __multiply__(self, other):
+        product = lambda args: reduce(operator.mul, args, 1)
+        return OpModel(product, self, other)
+
+    def __rmultiply__(self, other):
+        product = lambda args: reduce(operator.mul, args, 1)
+        return OpModel(product, self, other)
+
 class ModelInst(Term):
     """ An instance of a model """
     def __init__(self, model, *args, **kwargs):
@@ -80,13 +94,6 @@ class ModelInst(Term):
             if isinstance(p, FittedParam):
                 accum += 1
         return accum
-
-    def __add__(self, other):
-        return OpModel(sum, self, other)
-
-    def __multiply__(self, other):
-        product = lambda args: reduce(operator.mul, args, 1)
-        return OpModel(product, self, other)
         
 class OpModel(Term):
     def __init__(self, op, *operands):
