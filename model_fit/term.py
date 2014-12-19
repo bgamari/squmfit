@@ -1,5 +1,6 @@
 from __future__ import division
 import operator
+import numpy as np
 import scipy.optimize
 
 class Model(object):
@@ -11,7 +12,7 @@ class Model(object):
     def __init__(self, eval, param_names=None):
         """
         Create a Model.
-        
+
         Parameters:
         ------------
         eval : callable
@@ -32,7 +33,7 @@ class Model(object):
             self.eval = eval
 
     def __call__(self, *args, **kwargs):
-        """ 
+        """
         Produce a closure which will invoke the Model's eval function
         with the provided arguments, taking arguments from a parameters
         vector as necessary.
@@ -54,18 +55,26 @@ class Term(object):
         raise NotImplemented
 
     def __add__(self, other):
-        return OpTerm(sum, self, lift_term(other))
+        return OpTerm(operator.add, self, lift_term(other))
 
     def __radd__(self, other):
-        return OpTerm(sum, self, lift_term(other))
+        return OpTerm(operator.add, self, lift_term(other))
+
+    def __sub__(self, other):
+        return OpTerm(operator.sub, self, lift_term(other))
+
+    def __rsub__(self, other):
+        return OpTerm(operator.sub, self, lift_term(other))
 
     def __mul__(self, other):
-        product = lambda args: reduce(operator.mul, args, 1)
-        return OpTerm(product, self, lift_term(other))
+        return OpTerm(operator.mul, self, lift_term(other))
 
     def __rmul__(self, other):
-        product = lambda args: reduce(operator.mul, args, 1)
-        return OpTerm(product, self, lift_term(other))
+        return OpTerm(operator.mul, self, lift_term(other))
+
+    def exp(self):
+        """ Used by numpy """
+        return OpTerm(np.exp, self)
 
 class ModelInst(Term):
     """ An instance of a model """
@@ -90,7 +99,7 @@ class ModelInst(Term):
             expected = set(self.model.param_names)
             raise RuntimeError('Saw parameters %s, expected parameters %s' % (given, expected))
         return self.model.eval(**eval_kwargs)
-        
+
     def parameters(self):
         accum = set()
         for p in self.args:
@@ -100,15 +109,15 @@ class ModelInst(Term):
             if isinstance(p, Term):
                 accum.update(p.parameters())
         return accum
-        
+
 class OpTerm(Term):
     def __init__(self, op, *operands):
         self.op = op
         self.operands = operands
 
     def evaluate(self, params, **user_args):
-        return self.op([model.evaluate(params, **user_args) for model in self.operands])
-        
+        return self.op(*[model.evaluate(params, **user_args) for model in self.operands])
+
     def parameters(self):
         accum = set()
         accum.update(*[a.parameters() for a in self.operands])
