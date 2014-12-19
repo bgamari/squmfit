@@ -75,7 +75,8 @@ class Fit(object):
             unpacked_cov = {name: self.param_set._unpack(inner)
                             for name, inner in self.param_set._unpack(cov).items()}
         params = self.param_set._unpack(packed)
-        fit = FitResult(deepcopy(self), params0, params, unpacked_cov)
+        initial = self.param_set._unpack(packed0)
+        fit = FitResult(deepcopy(self), initial, params, unpacked_cov)
         return fit
 
 class CurveResult(object):
