@@ -59,11 +59,11 @@ class Term(object):
     def __radd__(self, other):
         return OpTerm(sum, self, lift_term(other))
 
-    def __multiply__(self, other):
+    def __mul__(self, other):
         product = lambda args: reduce(operator.mul, args, 1)
         return OpTerm(product, self, lift_term(other))
 
-    def __rmultiply__(self, other):
+    def __rmul__(self, other):
         product = lambda args: reduce(operator.mul, args, 1)
         return OpTerm(product, self, lift_term(other))
 
