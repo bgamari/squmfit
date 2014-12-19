@@ -17,7 +17,7 @@ class Curve(object):
         """ Evaluate the model """
         args = self.user_args.copy()
         args.update(user_args)
-        return self.model(params, **args)
+        return self.model.evaluate(params, **args)
 
     def residuals_packed(self, params, **user_args):
         """ Compute the weighed residuals """

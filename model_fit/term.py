@@ -47,7 +47,7 @@ def lift_term(value):
         return ConstTerm(value)
 
 class Term(object):
-    def __call__(self, params, **user_args):
+    def evaluate(self, params, **user_args):
         raise NotImplemented
 
     def parameters(self):
@@ -75,15 +75,15 @@ class ModelInst(Term):
         self.args = args
         self.kwargs = kwargs
 
-    def __call__(self, params, **user_args):
-        def evaluate(value):
-            if isinstance(value, FittedParam):
-                return params[value.idx]
+    def evaluate(self, params, **user_args):
+        def eval_term(value):
+            if isinstance(value, Term):
+                return value.evaluate(params, **user_args)
             else:
                 return value
-        eval_args = map(evaluate, self.args)
+        eval_args = map(eval_term, self.args)
         eval_kwargs = user_args.copy()
-        eval_kwargs.update({k: evaluate(v) for k,v in self.kwargs.iteritems()})
+        eval_kwargs.update({k: eval_term(v) for k,v in self.kwargs.iteritems()})
         for name, value in zip(self.model.param_names, eval_args):
             eval_kwargs[name] = value
         if eval_kwargs.viewkeys() != set(self.model.param_names):
@@ -107,8 +107,8 @@ class OpTerm(Term):
         self.op = op
         self.operands = operands
 
-    def __call__(self, params, **user_args):
-        return self.op([model(params, **user_args) for model in self.operands])
+    def evaluate(self, params, **user_args):
+        return self.op([model.evaluate(params, **user_args) for model in self.operands])
         
     def parameters(self):
         accum = set()
@@ -119,7 +119,7 @@ class ConstTerm(Term):
     def __init__(self, value):
         self.value = value
 
-    def __call__(self, params, **user_args):
+    def evaluate(self, params, **user_args):
         return self.value
 
     def parameters(self):
