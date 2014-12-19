@@ -12,7 +12,7 @@ class Curve(object):
         self.data = data
         self.weights = weights
         self.user_args = user_args
-        
+
     def eval_packed(self, params, **user_args):
         """ Evaluate the model """
         args = self.user_args.copy()
@@ -34,14 +34,14 @@ class Fit(object):
     def __init__(self):
         self._curves = []
         self.param_set = ParameterSet()
-    
+
     def param(self, name=None, initial=None):
         return self.param_set.param(name, initial=initial)
 
     def add_curve(self, name, model, data, weights=None, **user_args):
         curve = Curve(name, model, data, weights, **user_args)
         self._curves.append(curve)
-        
+
     def eval_packed(self, params, **user_args):
         """ Evaluate the model against packed parameters values """
         return {curve.name: curve.eval_packed(params, **user_args)
@@ -68,15 +68,21 @@ class Fit(object):
         def fit_func(p):
             res = self.residuals_packed(p, **user_args)
             return np.hstack(res.values())
-        packed, cov, info, mesg, ier = scipy.optimize.leastsq(fit_func, packed0, full_output=True)
-        if cov is None:
-            unpacked_cov = None
+        packed, cov_x, info, mesg, ier = scipy.optimize.leastsq(fit_func, packed0, full_output=True)
+
+        def unpack_covar(matrix):
+            return {name: self.param_set._unpack(inner)
+                    for name, inner in self.param_set._unpack(matrix).items()}
+        if cov_x is None:
+            cov_p = None
         else:
-            unpacked_cov = {name: self.param_set._unpack(inner)
-                            for name, inner in self.param_set._unpack(cov).items()}
+            nparams = len(self.param_set.params)
+            npts = sum(len(curve.data) for curve in self._curves)
+            red_chisq = np.sum(info['fvec']**2) / (npts - nparams)
+            cov_p = unpack_covar(cov_x * red_chisq)
         params = self.param_set._unpack(packed)
         initial = self.param_set._unpack(packed0)
-        fit = FitResult(deepcopy(self), initial, params, unpacked_cov)
+        fit = FitResult(deepcopy(self), initial, params, cov_p)
         return fit
 
 class CurveResult(object):
@@ -91,12 +97,26 @@ class CurveResult(object):
         self.residuals = self.curve.residuals_packed(self.fit_result.fit.param_set._pack(params))
         self.chi_sqr = sum(self.residuals**2)
         self.reduced_chi_sqr = self.chi_sqr / self.degrees_of_freedom
-        
+
 class FitResult(object):
-    def __init__(self, fit, initial_params, params, covar):
+    def __init__(self, fit, initial_params, params, covar_p):
         self.fit = fit
         self.initial_params = initial_params
         self.params = params
-        self.covar = covar
+        self.covar = covar_p
         self.curves = {curve.name: CurveResult(self, curve)
                        for curve in fit._curves}
+
+        self.stderr = None
+        self.correl = None
+        if self.covar is not None:
+            self.stderr = {name: np.sqrt(self.covar[name][name])
+                           for name in params}
+            self.correl = {name: {name2: self.covar[name][name2] / self.stderr[name] / self.stderr[name2]
+                                  for name2 in self.params
+                                  if name != name2}
+                           for name in self.params}
+
+    @property
+    def total_chi_sqr(self):
+        return sum(curve.chi_sqr for curve in self.curves.values())
