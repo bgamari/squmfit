@@ -54,6 +54,9 @@ class Term(object):
         """ Return the set of parameters used by this term (and its sub-terms) """
         raise NotImplemented
 
+    def __neg__(self):
+        return OpTerm(operator.neg, self)
+
     def __add__(self, other):
         return OpTerm(operator.add, self, lift_term(other))
 
