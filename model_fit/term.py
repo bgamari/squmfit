@@ -42,7 +42,7 @@ class Model(object):
 
 def lift_term(value):
     if isinstance(value, Term):
-        return Term
+        return value
     else:
         return ConstTerm(value)
 
