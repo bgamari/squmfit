@@ -1,7 +1,6 @@
 from __future__ import division
 import operator
 import scipy.optimize
-from .parameter import FittedParam
 
 class Model(object):
     """
@@ -95,11 +94,11 @@ class ModelInst(Term):
     def parameters(self):
         accum = set()
         for p in self.args:
-            if isinstance(p, FittedParam):
-                accum.add(p)
+            if isinstance(p, Term):
+                accum.update(p.parameters())
         for p in self.kwargs.values():
-            if isinstance(p, FittedParam):
-                accum.add(p)
+            if isinstance(p, Term):
+                accum.update(p.parameters())
         return accum
         
 class OpTerm(Term):

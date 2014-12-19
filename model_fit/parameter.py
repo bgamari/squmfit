@@ -1,13 +1,20 @@
 from __future__ import division
 import numpy as np
+from .term import Term
 
-class FittedParam(object):
+class FittedParam(Term):
     """ A parameter to be fitted to data. """
     def __init__(self, idx, name=None, initial=None):
         # these shalln't be mutated
         self.idx = idx
         self.name = name
         self.initial = initial
+
+    def evaluate(self, params, **user_args):
+        return params[self.idx]
+
+    def parameters(self):
+        return set([self])
 
 class ParameterSet(object):
     """
@@ -19,7 +26,7 @@ class ParameterSet(object):
 
     def __getitem__(self, name):
         return self.params[name]
-            
+
     def param_names(self):
         return self.params.keys()
 
@@ -45,7 +52,7 @@ class ParameterSet(object):
         param = FittedParam(idx, name, initial)
         self.params[name] = param
         return param
-        
+
     def _pack(self, values):
         """
         Pack a set of parameter values (given as a dictionary) into a
