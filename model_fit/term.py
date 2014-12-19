@@ -39,32 +39,39 @@ class Model(object):
         vector as necessary.
         """
         return ModelInst(self, *args, **kwargs)
-       
+
+def lift_term(value):
+    if isinstance(value, Term):
+        return Term
+    else:
+        return ConstTerm(value)
+
 class Term(object):
     def __call__(self, params, **user_args):
         raise NotImplemented
 
-    def count_params(self):
+    def parameters(self):
+        """ Return the set of parameters used by this term (and its sub-terms) """
         raise NotImplemented
 
     def __add__(self, other):
-        return OpModel(sum, self, other)
+        return OpTerm(sum, self, lift_term(other))
 
     def __radd__(self, other):
-        return OpModel(sum, self, other)
+        return OpTerm(sum, self, lift_term(other))
 
     def __multiply__(self, other):
         product = lambda args: reduce(operator.mul, args, 1)
-        return OpModel(product, self, other)
+        return OpTerm(product, self, lift_term(other))
 
     def __rmultiply__(self, other):
         product = lambda args: reduce(operator.mul, args, 1)
-        return OpModel(product, self, other)
+        return OpTerm(product, self, lift_term(other))
 
 class ModelInst(Term):
     """ An instance of a model """
-    def __init__(self, model, *args, **kwargs):
-        self.model = model
+    def __init__(self, _model, *args, **kwargs):
+        self.model = _model
         self.args = args
         self.kwargs = kwargs
 
@@ -81,21 +88,21 @@ class ModelInst(Term):
             eval_kwargs[name] = value
         if eval_kwargs.viewkeys() != set(self.model.param_names):
             given = eval_kwargs.viewkeys()
-            expected = set(self.param_names)
+            expected = set(self.model.param_names)
             raise RuntimeError('Saw parameters %s, expected parameters %s' % (given, expected))
         return self.model.eval(**eval_kwargs)
         
-    def count_params(self):
-        accum = 0
+    def parameters(self):
+        accum = set()
         for p in self.args:
             if isinstance(p, FittedParam):
-                accum += 1
+                accum.add(p)
         for p in self.kwargs.values():
             if isinstance(p, FittedParam):
-                accum += 1
+                accum.add(p)
         return accum
         
-class OpModel(Term):
+class OpTerm(Term):
     def __init__(self, op, *operands):
         self.op = op
         self.operands = operands
@@ -103,6 +110,17 @@ class OpModel(Term):
     def __call__(self, params, **user_args):
         return self.op([model(params, **user_args) for model in self.operands])
         
-    def count_params(self):
-        return sum(a.count_params() for a in self.operands)
+    def parameters(self):
+        accum = set()
+        accum.update(*[a.parameters() for a in self.operands])
+        return accum
 
+class ConstTerm(Term):
+    def __init__(self, value):
+        self.value = value
+
+    def __call__(self, params, **user_args):
+        return self.value
+
+    def parameters(self):
+        return set()
