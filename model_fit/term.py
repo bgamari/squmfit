@@ -72,6 +72,18 @@ class Term(object):
     def __rmul__(self, other):
         return OpTerm(operator.mul, self, lift_term(other))
 
+    def __div__(self, other):
+        return OpTerm(operator.div, self, lift_term(other))
+
+    def __rdiv__(self, other):
+        return OpTerm(operator.div, self, lift_term(other))
+
+    def __pow__(self, other):
+        return OpTerm(operator.pow, self, lift_term(other))
+
+    def __rpow__(self, other):
+        return OpTerm(operator.pow, self, lift_term(other))
+
     def exp(self):
         """ Used by numpy """
         return OpTerm(np.exp, self)
