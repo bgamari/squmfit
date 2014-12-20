@@ -9,4 +9,4 @@ multiple curves with tied parameters.
 See [ReadTheDocs][rtd] for documentation.
 
 [lmfit]: http://cars9.uchicago.edu/software/python/lmfit/
-[ReadTheDocs]: http://squmfit.readthedocs.org/
+[rtd]: http://squmfit.readthedocs.org/
