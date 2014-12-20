@@ -59,7 +59,7 @@ class Fit(object):
         :param name:
             A unique name for the curve.
 
-        :type model: :class:`Term`
+        :type model: :class:`Expr`
         :param model:
             The analytical model which will be fit to the curve.
 

@@ -12,10 +12,10 @@ The :class:`Model` class
 .. autoclass:: Model
    :members:
 
-The :class:`Term` class
+The :class:`Expr` class
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: Term
+.. autoclass:: Expr
    :members:
 
 

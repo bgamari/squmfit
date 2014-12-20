@@ -36,15 +36,15 @@ class Model(object):
         with the provided arguments, taking arguments from a parameters
         vector as necessary.
         """
-        return ModelInst(self, *args, **kwargs)
+        return FuncExpr(self, *args, **kwargs)
 
 def lift_term(value):
-    if isinstance(value, Term):
+    if isinstance(value, Expr):
         return value
     else:
-        return ConstTerm(value)
+        return Constant(value)
 
-class Term(object):
+class Expr(object):
     """
     An expression capable of taking parameters from a packed parameter
     vector. All of the usual arithmetic operations are supported.
@@ -64,59 +64,75 @@ class Term(object):
 
     def parameters(self):
         """
-        Return the set of parameters used by this term (and its sub-terms).
+        Return the set of fitted parameters used by this expression.
 
         :rtype: :class:`set` of :class:`FittedParam`.
         """
         raise NotImplemented
 
     def __neg__(self):
-        return OpTerm(operator.neg, self)
+        return OpExpr(operator.neg, self)
 
     def __add__(self, other):
-        return OpTerm(operator.add, self, lift_term(other))
+        return OpExpr(operator.add, self, lift_term(other))
 
     def __radd__(self, other):
-        return OpTerm(operator.add, lift_term(other), self)
+        return OpExpr(operator.add, lift_term(other), self)
 
     def __sub__(self, other):
-        return OpTerm(operator.sub, self, lift_term(other))
+        return OpExpr(operator.sub, self, lift_term(other))
 
     def __rsub__(self, other):
-        return OpTerm(operator.sub, lift_term(other), self)
+        return OpExpr(operator.sub, lift_term(other), self)
 
     def __mul__(self, other):
-        return OpTerm(operator.mul, self, lift_term(other))
+        return OpExpr(operator.mul, self, lift_term(other))
 
     def __rmul__(self, other):
-        return OpTerm(operator.mul, lift_term(other), self)
+        return OpExpr(operator.mul, lift_term(other), self)
 
     def __div__(self, other):
-        return OpTerm(operator.div, self, lift_term(other))
+        return OpExpr(operator.div, self, lift_term(other))
 
     def __rdiv__(self, other):
-        return OpTerm(operator.div, lift_term(other), self)
+        return OpExpr(operator.div, lift_term(other), self)
 
     def __pow__(self, other):
-        return OpTerm(operator.pow, self, lift_term(other))
+        return OpExpr(operator.pow, self, lift_term(other))
 
     def __rpow__(self, other):
-        return OpTerm(operator.pow, lift_term(other), self)
+        return OpExpr(operator.pow, lift_term(other), self)
 
     def exp(self):
         # Used by numpy
-        return OpTerm(np.exp, self)
+        return OpExpr(np.exp, self)
 
-class ModelInst(Term):
-    """ An instance of a model """
-    def __init__(self, _model, *args, **kwargs):
-        self.model = _model
+class FuncExpr(Expr):
+    """
+    An expression which calls a function.
+
+    Any arguments which are :class:`Expr` objects will be evaluated
+    with :class:`Expr.evaluate` before being passed to the function.
+    """
+
+    def __init__(self, func, *args, **kwargs):
+        """
+        Create an expression which calls the provided function with
+        the provided arguments. Any arguments which are :class:`Expr`
+        objects will be evaluated with :class:`Expr.evaluate` before
+        being passed on to the function.
+
+        :param func: The function to call.
+        :param args: Ordered arguments to pass to the function.
+        :param kwargs: Keyword arguments to pass to the function.
+        """
+        self.model = func
         self.args = args
         self.kwargs = kwargs
 
     def evaluate(self, params, **user_args):
         def eval_term(value):
-            if isinstance(value, Term):
+            if isinstance(value, Expr):
                 return value.evaluate(params, **user_args)
             else:
                 return value
@@ -134,14 +150,15 @@ class ModelInst(Term):
     def parameters(self):
         accum = set()
         for p in self.args:
-            if isinstance(p, Term):
+            if isinstance(p, Expr):
                 accum.update(p.parameters())
         for p in self.kwargs.values():
-            if isinstance(p, Term):
+            if isinstance(p, Expr):
                 accum.update(p.parameters())
         return accum
 
-class OpTerm(Term):
+class OpExpr(Expr):
+    """ A helper used by arithmetic operations """
     def __init__(self, op, *operands):
         self.op = op
         self.operands = operands
@@ -154,7 +171,8 @@ class OpTerm(Term):
         accum.update(*[a.parameters() for a in self.operands])
         return accum
 
-class ConstTerm(Term):
+class Constant(Expr):
+    """ An :class:`Expr` which always evaluates to the given value """
     def __init__(self, value):
         self.value = value
 

@@ -1,8 +1,8 @@
 from __future__ import division
 import numpy as np
-from .term import Term
+from .expr import Expr
 
-class FittedParam(Term):
+class FittedParam(Expr):
     """ A parameter to be fitted to data. """
     def __init__(self, idx, name=None, initial=None):
         # these shalln't be mutated

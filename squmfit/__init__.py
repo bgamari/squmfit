@@ -2,6 +2,6 @@
 Hello world
 """
 
-from .term import Model, Term, ModelInst
+from .expr import Model, Expr, FuncExpr
 from .fit import Curve, Fit, FitResult, CurveResult
 from .parameter import FittedParam
