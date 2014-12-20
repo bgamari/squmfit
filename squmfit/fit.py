@@ -32,35 +32,106 @@ class Fit(object):
     """
 
     def __init__(self):
+        """ Create a new fit configuration. """
         self._curves = []
         self.param_set = ParameterSet()
 
     def param(self, name=None, initial=None):
+        """
+        Create a new parameter.
+
+        :type name: str, optional
+        :param name:
+            The name of the new parameter. A name will be generated if this is omitted.
+
+        :type initial: float, optional
+        :param initial:
+            The initial value of the parameter. If not provided then a
+            value must be provided when :func:`fit` is called.
+        """
         return self.param_set.param(name, initial=initial)
 
     def add_curve(self, name, model, data, weights=None, **user_args):
+        """
+        Add a curve to the fit.
+
+        :type name: str
+        :param name:
+            A unique name for the curve.
+
+        :type model: :class:`Term`
+        :param model:
+            The analytical model which will be fit to the curve.
+
+        :type data: array, shape = [n_samples]
+        :param data:
+            An array of the dependent values for each sample.
+
+        :type weights: array, shape = [n_samples], optional
+        :param weights:
+            An array of the weight of each sample.
+
+        :type user_args: kwargs
+        :param user_args:
+            Keyword arguments passed to the model during evaluation.
+        """
         curve = Curve(name, model, data, weights, **user_args)
         self._curves.append(curve)
 
     def eval_packed(self, params, **user_args):
-        """ Evaluate the model against packed parameters values """
+        """
+        Evaluate the model against packed parameters values
+
+        :type params: array, shape = [n_params]
+        :param params: A packed array of parameters.
+        :type user_args: kwargs
+        :param user_args: Keyword arguments passed to the model.
+
+        :rtype: dict, curve_name -> array, shape = [n_samples]
+        """
         return {curve.name: curve.eval_packed(params, **user_args)
                 for curve in self._curves}
 
     def residuals_packed(self, params, **user_args):
-        """ Compute the weighed residuals against packed paramater values """
+        """
+        Compute the weighed residuals against packed paramater
+        values. See :func:`eval_packed` for parameter descriptions.
+        """
         return {curve.name: curve.residuals_packed(params, **user_args)
                 for curve in self._curves}
 
     def eval(self, params, **user_args):
-        """ Evaluate the model against a dictionary of parameters """
+        """
+        Evaluate the model against a dictionary of parameters
+
+        :type params: dict, param_name -> float
+        :param params: A dictionary of parameters values.
+        :type user_args: kwargs
+        :param user_args: Keyword arguments passed to the model.
+        :rtype: dict, curve_name -> array, shape = [n_samples]
+        :returns: The value of the model evaluated with the given parameters.
+        """
         return self.eval_packed(self.param_set._pack(params), **user_args)
 
     def residuals(self, params, **user_args):
-        """ Evaluate the weighted model residuals against a dictionary of parameters """
+        """
+        Evaluate the weighted model residuals against a dictionary of
+        parameters values. See :func:`eval` for parameter
+        descriptions.
+        """
         return self.residuals_packed(self.param_set._pack(params), **user_args)
 
     def fit(self, params0=None, **user_args):
+        """
+        Carry out the fit.
+
+        :type params0: dict, param_name -> float
+        :param params0: The initial parameter values.
+        :type user_args: kwargs
+        :param user_args: Keyword arguments passed to the model.
+
+        :rtype: A :class:`FitResults` object.
+        """
         unpacked = self.param_set.initial_params()
         if params0 is not None:
             unpacked.update(params0)
@@ -91,23 +162,28 @@ class CurveResult(object):
     This embodies a set of parameter values, particularly describing the goodness-of-fit with
     respect to a given curve.
 
-    Attributes
-    ----------
-    fit_result : FitResult
-        The FitResult describing this result
-    curve : Curve
-        The Curve described by this result
-    degrees_of_freedom : int
+    :type fit_result: :class:`FitResult`
+    :ivar fit_result:
+        The fit this result is owned by.
+    :type curve: :class:`Curve`
+    :ivar curve:
+        The curve described by this result
+    :type degrees_of_freedom: int
+    :ivar degrees_of_freedom:
         The number of degrees-of-freedom of the fit. This is defined as the number of
         data points in the curve minus the number of free parameters
         in the fitting model.
-    fit : ndarray
+    :type fit: ndarray
+    :ivar fit:
         The model evaluated with the parameter values.
-    residuals : ndarray
+    :type residuals: ndarray
+    :ivar residuals:
         The residuals of the fit
-    chi_sqr : float
+    :type chi_sqr: float
+    :ivar chi_sqr:
         Chi-squared of the fit
-    reduced_chi_sqr : float
+    :type reduced_chi_sqr: float
+    :ivar reduced_chi_sqr:
         The reduced chi-squared of the fit. Namely, ``chi_sqr / degrees_of_freedom``.
     """
 
@@ -126,29 +202,37 @@ class FitResult(object):
     """
     This embodies a set of parameter values, possibly originating from a fit.
 
-    Attributes
-    -----------
-    fit : Fit
-        The Fit for which these parameter apply.
-    initial : FitResult
-        The FitResult used as the initial parameters for the Fit from
-        which this result originated.
-    params : array, shape = [n_params]
+    :type initial: :class:`FitResult`
+    :ivar initial:
+        The :class:`FitResult` used as the initial parameters for the
+        :class:`Fit` from which this result originated.
+
+    :type params: array, shape = [n_params]
+    :ivar params:
         The parameter values
-    curves : dict, curve_name -> CurveResults
+
+    :type curves: dict, curve_name -> :class:`CurveResult`
+    :ivar curves:
         Results for particular curves.
-    covar : dict of dicts, param_name -> param_name -> float or ``None``
+
+    :type covar: dict of dicts, param_name -> param_name -> float or ``None``
+    :ivar covar:
         The covariances between parameters, or ``None`` if not available
         (which may either be due to numerical trouble in calculation
-        or simply not being provided when the FitResult was created).
-    stderr : dict, param_name -> float or ``None``
+        or simply not being provided when the :class:`FitResult` was
+        created).
+
+    :type stderr: dict, param_name -> float or ``None``
+    :ivar stderr:
         The standard error of the parameter estimate or ``None`` if not available.
-    correl : dict, param_name -> param_name -> float or ``None``
+
+    :type correl: dict, param_name -> param_name -> float or ``None``
+    :ivar correl:
         The correlation coefficient between parameters or ``None`` if not available.
     """
 
     def __init__(self, fit, params, covar_p=None, initial_result=None):
-        self.fit = fit
+        self._fit = fit
         self.initial = initial_result
         self.params = params
         self.covar = covar_p
@@ -166,5 +250,20 @@ class FitResult(object):
                            for name in self.params}
 
     @property
+    def fit(self):
+        """
+        The Fit for which these parameter apply.
+
+        :rtype: :class:`Fit`
+        """
+        return self._fit
+
+    @property
     def total_chi_sqr(self):
+        """
+        The sum of the individual curves' chi-squared values. This can
+        be useful as a global goodness-of-fit metric.
+
+        :rtype: float
+        """
         return sum(curve.chi_sqr for curve in self.curves.values())

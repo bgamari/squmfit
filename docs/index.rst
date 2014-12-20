@@ -1,11 +1,13 @@
+.. currentmodule:: squmfit
+
 Welcome to squmfit's documentation
 =====================================
 
-This is the documentation for `squmfit`_, a Python library for
-convenient non-linear least-squares fitting of multiple analytical
-models to data. This library is similar to the excellent `lmfit`_
-package but is a fresh implementation designed with support for global
-fitting of multiple curves with parameter tying.
+This is the documentation for `squmfit`_ (pronounced "squim-fit"), a
+Python library for convenient non-linear least-squares fitting of
+multiple analytical models to data. This library is similar to the
+excellent `lmfit`_ package but is a fresh implementation designed with
+support for global fitting of multiple curves with parameter tying.
 
 You may want to start at :doc:`getting_started` or go directly to the
 :mod:`squmfit` module documentation.
@@ -19,7 +21,6 @@ Contents:
    :maxdepth: 2
 
    getting_started
-
 
 Overview
 ---------
@@ -64,6 +65,14 @@ Fitting
 Fitting begins with the :class:`Fit` class which is used to define
 the data sets and models to be fit and ultimately 
 
+.. autoclass:: squmfit.Fit
+   :members:
+
+Inspecting fit results
+----------------------
+
+.. autoclass:: squmfit.FitResult
+   :members:
 
 Defining a Model
 -----------------
