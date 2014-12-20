@@ -61,31 +61,31 @@ class Term(object):
         return OpTerm(operator.add, self, lift_term(other))
 
     def __radd__(self, other):
-        return OpTerm(operator.add, self, lift_term(other))
+        return OpTerm(operator.add, lift_term(other), self)
 
     def __sub__(self, other):
         return OpTerm(operator.sub, self, lift_term(other))
 
     def __rsub__(self, other):
-        return OpTerm(operator.sub, self, lift_term(other))
+        return OpTerm(operator.sub, lift_term(other), self)
 
     def __mul__(self, other):
         return OpTerm(operator.mul, self, lift_term(other))
 
     def __rmul__(self, other):
-        return OpTerm(operator.mul, self, lift_term(other))
+        return OpTerm(operator.mul, lift_term(other), self)
 
     def __div__(self, other):
         return OpTerm(operator.div, self, lift_term(other))
 
     def __rdiv__(self, other):
-        return OpTerm(operator.div, self, lift_term(other))
+        return OpTerm(operator.div, lift_term(other), self)
 
     def __pow__(self, other):
         return OpTerm(operator.pow, self, lift_term(other))
 
     def __rpow__(self, other):
-        return OpTerm(operator.pow, self, lift_term(other))
+        return OpTerm(operator.pow, lift_term(other), self)
 
     def exp(self):
         """ Used by numpy """
