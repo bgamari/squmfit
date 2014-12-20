@@ -82,26 +82,74 @@ class Fit(object):
             cov_p = unpack_covar(cov_x * red_chisq)
         params = self.param_set._unpack(packed)
         initial = self.param_set._unpack(packed0)
-        fit = FitResult(deepcopy(self), initial, params, cov_p)
+        fit0 = FitResult(deepcopy(self), initial)
+        fit = FitResult(deepcopy(self), params, cov_p, initial_result=fit0)
         return fit
 
 class CurveResult(object):
+    """
+    This embodies a set of parameter values, particularly describing the goodness-of-fit with
+    respect to a given curve.
+
+    Attributes
+    ----------
+    fit_result : FitResult
+        The FitResult describing this result
+    curve : Curve
+        The Curve described by this result
+    degrees_of_freedom : int
+        The number of degrees-of-freedom of the fit. This is defined as the number of
+        data points in the curve minus the number of free parameters
+        in the fitting model.
+    fit : ndarray
+        The model evaluated with the parameter values.
+    residuals : ndarray
+        The residuals of the fit
+    chi_sqr : float
+        Chi-squared of the fit
+    reduced_chi_sqr : float
+        The reduced chi-squared of the fit. Namely, ``chi_sqr / degrees_of_freedom``.
+    """
+
     def __init__(self, fit_result, curve):
         params = fit_result.params
         self.fit_result = fit_result
         self.curve = curve
-        self.npoints = len(self.curve.data)
-        self.degrees_of_freedom = self.npoints - len(self.curve.model.parameters())
+        npoints = len(self.curve.data)
+        self.degrees_of_freedom = npoints - len(self.curve.model.parameters())
         self.fit = self.curve.eval_packed(self.fit_result.fit.param_set._pack(params))
-        self.initial_fit = self.curve.eval_packed(self.fit_result.fit.param_set._pack(fit_result.initial_params))
         self.residuals = self.curve.residuals_packed(self.fit_result.fit.param_set._pack(params))
         self.chi_sqr = sum(self.residuals**2)
         self.reduced_chi_sqr = self.chi_sqr / self.degrees_of_freedom
 
 class FitResult(object):
-    def __init__(self, fit, initial_params, params, covar_p):
+    """
+    This embodies a set of parameter values, possibly originating from a fit.
+
+    Attributes
+    -----------
+    fit : Fit
+        The Fit for which these parameter apply.
+    initial : FitResult
+        The FitResult used as the initial parameters for the Fit from
+        which this result originated.
+    params : array, shape = [n_params]
+        The parameter values
+    curves : dict, curve_name -> CurveResults
+        Results for particular curves.
+    covar : dict of dicts, param_name -> param_name -> float or ``None``
+        The covariances between parameters, or ``None`` if not available
+        (which may either be due to numerical trouble in calculation
+        or simply not being provided when the FitResult was created).
+    stderr : dict, param_name -> float or ``None``
+        The standard error of the parameter estimate or ``None`` if not available.
+    correl : dict, param_name -> param_name -> float or ``None``
+        The correlation coefficient between parameters or ``None`` if not available.
+    """
+
+    def __init__(self, fit, params, covar_p=None, initial_result=None):
         self.fit = fit
-        self.initial_params = initial_params
+        self.initial = initial_result
         self.params = params
         self.covar = covar_p
         self.curves = {curve.name: CurveResult(self, curve)
