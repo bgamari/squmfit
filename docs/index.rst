@@ -21,6 +21,7 @@ Contents:
    :maxdepth: 2
 
    getting_started
+   reference
 
 Overview
 ---------
@@ -66,13 +67,13 @@ Fitting begins with the :class:`Fit` class which is used to define
 the data sets and models to be fit and ultimately 
 
 .. autoclass:: squmfit.Fit
-   :members:
+   :noindex:
 
 Inspecting fit results
 ----------------------
 
 .. autoclass:: squmfit.FitResult
-   :members:
+   :noindex:
 
 Defining a Model
 -----------------
@@ -85,3 +86,4 @@ Defining a model is simply a matter of passing the function to the
     >>> ExpModel = Model(exponential_model)
 
 .. autoclass:: squmfit.Model
+   :noindex:

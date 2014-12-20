@@ -84,6 +84,7 @@ class Fit(object):
 
         :type params: array, shape = [n_params]
         :param params: A packed array of parameters.
+
         :type user_args: kwargs
         :param user_args: Keyword arguments passed to the model.
 
@@ -106,8 +107,10 @@ class Fit(object):
 
         :type params: dict, param_name -> float
         :param params: A dictionary of parameters values.
+
         :type user_args: kwargs
         :param user_args: Keyword arguments passed to the model.
+
         :rtype: dict, curve_name -> array, shape = [n_samples]
         :returns: The value of the model evaluated with the given parameters.
         """
@@ -127,6 +130,7 @@ class Fit(object):
 
         :type params0: dict, param_name -> float
         :param params0: The initial parameter values.
+
         :type user_args: kwargs
         :param user_args: Keyword arguments passed to the model.
 
@@ -159,95 +163,106 @@ class Fit(object):
 
 class CurveResult(object):
     """
-    This embodies a set of parameter values, particularly describing the goodness-of-fit with
-    respect to a given curve.
-
-    :type fit_result: :class:`FitResult`
-    :ivar fit_result:
-        The fit this result is owned by.
-    :type curve: :class:`Curve`
-    :ivar curve:
-        The curve described by this result
-    :type degrees_of_freedom: int
-    :ivar degrees_of_freedom:
-        The number of degrees-of-freedom of the fit. This is defined as the number of
-        data points in the curve minus the number of free parameters
-        in the fitting model.
-    :type fit: ndarray
-    :ivar fit:
-        The model evaluated with the parameter values.
-    :type residuals: ndarray
-    :ivar residuals:
-        The residuals of the fit
-    :type chi_sqr: float
-    :ivar chi_sqr:
-        Chi-squared of the fit
-    :type reduced_chi_sqr: float
-    :ivar reduced_chi_sqr:
-        The reduced chi-squared of the fit. Namely, ``chi_sqr / degrees_of_freedom``.
+    This embodies a set of parameter values describing the
+    goodness-of-fit with respect to a given curve.
     """
 
     def __init__(self, fit_result, curve):
         params = fit_result.params
-        self.fit_result = fit_result
-        self.curve = curve
+        self._fit_result = fit_result
+        self._curve = curve
+        self._fit = self.curve.eval_packed(self.fit_result.fit.param_set._pack(params))
+        self._residuals = self.curve.residuals_packed(self.fit_result.fit.param_set._pack(params))
+        self._chi_sqr = sum(self.residuals**2)
+
+    @property
+    def fit_result(self):
+        """
+        The :class:`FitResult` this :class:`CurveResult` was derived from.
+
+        :rtype: :class:`FitResult`
+        """
+        return self._fit_result
+
+    @property
+    def curve(self):
+        """
+        The curve described by this result
+
+        :rtype: :class:`Curve`
+        """
+        return self._curve
+
+    @property
+    def fit(self):
+        """
+        The model evaluated with the parameter values.
+
+        :rtype: ndarray
+        """
+        return self._fit
+
+    @property
+    def degrees_of_freedom(self):
+        """
+        The number of degrees-of-freedom of the fit. This is defined as the number of
+        data points in the curve minus the number of free parameters
+        in the fitting model.
+
+        :rtype: int
+        """
         npoints = len(self.curve.data)
-        self.degrees_of_freedom = npoints - len(self.curve.model.parameters())
-        self.fit = self.curve.eval_packed(self.fit_result.fit.param_set._pack(params))
-        self.residuals = self.curve.residuals_packed(self.fit_result.fit.param_set._pack(params))
-        self.chi_sqr = sum(self.residuals**2)
-        self.reduced_chi_sqr = self.chi_sqr / self.degrees_of_freedom
+        return npoints - len(self.curve.model.parameters())
+
+    @property
+    def residuals(self):
+        """
+        The residuals of the fit
+
+        :rtype: ndarray
+        """
+        return self._residuals
+
+    @property
+    def chi_sqr(self):
+        """
+        Chi-squared of the fit.
+
+        :rtype: float
+        """
+        return self._chi_sqr
+
+    @property
+    def reduced_chi_sqr(self):
+        """
+        Reduced chi-squared of the fit. Namely, ``chi_sqr / degrees_of_freedom``.
+
+        :rtype: float
+        """
+        return self.chi_sqr / self.degrees_of_freedom
 
 class FitResult(object):
     """
     This embodies a set of parameter values, possibly originating from a fit.
-
-    :type initial: :class:`FitResult`
-    :ivar initial:
-        The :class:`FitResult` used as the initial parameters for the
-        :class:`Fit` from which this result originated.
-
-    :type params: array, shape = [n_params]
-    :ivar params:
-        The parameter values
-
-    :type curves: dict, curve_name -> :class:`CurveResult`
-    :ivar curves:
-        Results for particular curves.
-
-    :type covar: dict of dicts, param_name -> param_name -> float or ``None``
-    :ivar covar:
-        The covariances between parameters, or ``None`` if not available
-        (which may either be due to numerical trouble in calculation
-        or simply not being provided when the :class:`FitResult` was
-        created).
-
-    :type stderr: dict, param_name -> float or ``None``
-    :ivar stderr:
-        The standard error of the parameter estimate or ``None`` if not available.
-
-    :type correl: dict, param_name -> param_name -> float or ``None``
-    :ivar correl:
-        The correlation coefficient between parameters or ``None`` if not available.
     """
 
     def __init__(self, fit, params, covar_p=None, initial_result=None):
         self._fit = fit
-        self.initial = initial_result
-        self.params = params
-        self.covar = covar_p
-        self.curves = {curve.name: CurveResult(self, curve)
-                       for curve in fit._curves}
+        self._initial = initial_result
+        self._params = params
+        self._covar = covar_p
+        self._curves = {curve.name: CurveResult(self, curve)
+                        for curve in fit._curves}
 
-        self.stderr = None
-        self.correl = None
-        if self.covar is not None:
-            self.stderr = {name: np.sqrt(self.covar[name][name])
-                           for name in params}
-            self.correl = {name: {name2: self.covar[name][name2] / self.stderr[name] / self.stderr[name2]
-                                  for name2 in self.params
-                                  if name != name2}
-                           for name in self.params}
+        self._stderr = None
+        self._correl = None
+        if self._covar is not None:
+            self._stderr = {name: np.sqrt(self.covar[name][name])
+                            for name in params}
+            self._correl = {name: {name2: self.covar[name][name2] / self.stderr[name] / self.stderr[name2]
+                                   for name2 in self.params
+                                   if name != name2}
+                            for name in self.params}
 
     @property
     def fit(self):
@@ -257,6 +272,64 @@ class FitResult(object):
         :rtype: :class:`Fit`
         """
         return self._fit
+
+    @property
+    def initial(self):
+        """
+        The :class:`FitResult` used as the initial parameters for the
+        :class:`Fit` from which this result originated.
+
+        :rtype: :class:`FitResult`
+        """
+        return self._initial
+
+    @property
+    def params(self):
+        """
+        The fitted parameter values
+
+        :rtype: array, shape = [n_params]
+        """
+        return self._params
+
+    @property
+    def curves(self):
+        """
+        Results for particular curves.
+
+        :rtype: dict, curve_name -> :class:`CurveResult`
+        """
+        return self._curves
+
+    @property
+    def covar(self):
+        """
+        The covariances between parameters, or ``None`` if not available
+        (which may either be due to numerical trouble in calculation
+        or simply not being provided when the :class:`FitResult` was
+        created).
+
+        :rtype: dict of dicts, param_name -> param_name -> float or ``None``
+        """
+        return self._covar
+
+    @property
+    def stderr(self):
+        """
+        The standard error of the parameter estimate or ``None`` if not available.
+
+        :rtype: dict, param_name -> float or ``None``
+        """
+        return self._stderr
+
+    @property
+    def correl(self):
+        """
+        The correlation coefficient between parameters or ``None`` if not available.
+
+        :rtype: dict, param_name -> param_name -> float or ``None``
+        """
+        return self._correl
 
     @property
     def total_chi_sqr(self):

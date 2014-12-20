@@ -13,12 +13,10 @@ class Model(object):
         """
         Create a Model.
 
-        Parameters:
-        ------------
-        eval : callable
-            The function to evalulate.
-        param_names : list or str, optional
-            The names of the parameters expected by the model. These are passed to eval.
+        :type eval: callable
+        :param eval: The function to evalulate.
+        :type param_names: list or str, optional
+        :param param_names: The names of the parameters expected by the model. These are passed to eval.
         """
         if param_names is None:
             import inspect
@@ -34,7 +32,7 @@ class Model(object):
 
     def __call__(self, *args, **kwargs):
         """
-        Produce a closure which will invoke the Model's eval function
+        Produce a closure which will invoke the :class:`Model`'s eval function
         with the provided arguments, taking arguments from a parameters
         vector as necessary.
         """
@@ -47,11 +45,29 @@ def lift_term(value):
         return ConstTerm(value)
 
 class Term(object):
+    """
+    An expression capable of taking parameters from a packed parameter
+    vector. All of the usual arithmetic operations are supported.
+    """
+
     def evaluate(self, params, **user_args):
+        """
+        Evaluate the model with the given parameter values.
+
+        :type params: array, shape = [n_params]
+        :param params: Packed parameters
+
+        :type user_args: kwargs
+        :param user_args: keyword arguments
+        """
         raise NotImplemented
 
     def parameters(self):
-        """ Return the set of parameters used by this term (and its sub-terms) """
+        """
+        Return the set of parameters used by this term (and its sub-terms).
+
+        :rtype: :class:`set` of :class:`FittedParam`.
+        """
         raise NotImplemented
 
     def __neg__(self):
@@ -88,7 +104,7 @@ class Term(object):
         return OpTerm(operator.pow, lift_term(other), self)
 
     def exp(self):
-        """ Used by numpy """
+        # Used by numpy
         return OpTerm(np.exp, self)
 
 class ModelInst(Term):
