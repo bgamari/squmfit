@@ -1,4 +1,4 @@
-Getting started with model-fit
+Getting started with squmfit
 ===============================
 
-`model-fit` is a general-purpose libr
+`squmfit` is a general-purpose libr

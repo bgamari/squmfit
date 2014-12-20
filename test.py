@@ -1,6 +1,6 @@
 from __future__ import division
 import numpy as np
-from model_fit import *
+from squmfit import *
 
 def exponential_model(t, amplitude, rate):
     return amplitude * np.exp(-t * rate)

@@ -1,16 +1,16 @@
-Welcome to model-fit's documentation
+Welcome to squmfit's documentation
 =====================================
 
-This is the documentation for `model-fit`_, a Python library for
-convenient non-linear least-squared fitting of analytical model to
-data. This library is similar to the excellent `lmfit`_ package but is
-a fresh implementation designed with support for global fitting of
-several curves with parameter tying.
+This is the documentation for `squmfit`_, a Python library for
+convenient non-linear least-squares fitting of multiple analytical
+models to data. This library is similar to the excellent `lmfit`_
+package but is a fresh implementation designed with support for global
+fitting of multiple curves with parameter tying.
 
 You may want to start at :doc:`getting_started` or go directly to the
-:mod:`model_fit` module documentation.
+:mod:`squmfit` module documentation.
 
-.. _model-fit: http://github.com/bgamari/model-fit
+.. _squmfit: http://github.com/bgamari/squmfit
 .. _lmfit: http://cars9.uchicago.edu/software/python/lmfit/
 
 Contents:
@@ -24,13 +24,13 @@ Contents:
 Overview
 ---------
 
-`model-fit` is a general-purpose library for non-linear least-squared
+`squmfit` is a general-purpose library for non-linear least-squared
 curve fitting. The library is designed to enable modular models which
 can be easily composed to describe complex data sets. Moreover, the
 library supports the ability to simultaneously fit multiple data sets,
 each with its own model, over a common set of parameters.
 
-In constrast to `lmfit`_, `model-fit` treats the free parameters of the 
+In constrast to `lmfit`_, `squmfit` treats the free parameters of the 
 the fit as first-class objects.
 
 A simple example
@@ -44,7 +44,7 @@ Let's say that we have a noisy exponential decay that we want model,
     >>> ys = 4 * np.exp(-xs / 400) + np.random.normal(scale=noise_std, size=xs.shape)
 
 To fit this we first define the model which we believes describes our
-data (or use one of the models provided in the :mod:`model-fit.models`
+data (or use one of the models provided in the :mod:`squmfit.models`
 module,
 
     >>> def exponential_model(t, amplitude, rate):
@@ -54,7 +54,7 @@ module,
 We then create a :class:`Fit` object, which we can then add our curve
 to,
 
-    >>> from model_fit import Fit
+    >>> from squmfit import Fit
     >>> fit = Fit()
     >>> fit
 
@@ -75,4 +75,4 @@ Defining a model is simply a matter of passing the function to the
     >>>     return amplitude * np.exp(-t * rate)
     >>> ExpModel = Model(exponential_model)
 
-.. autoclass:: model_fit.Model
+.. autoclass:: squmfit.Model
