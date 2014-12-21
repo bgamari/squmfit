@@ -212,7 +212,10 @@ class CurveResult(object):
 
         :rtype: int
         """
-        npoints = len(self.curve.data)
+        if self.curve.weights is not None:
+            npoints = np.count_nonzero(self.curve.weights)
+        else:
+            npoints = len(self.curve.data)
         return npoints - len(self.curve.model.parameters())
 
     @property
