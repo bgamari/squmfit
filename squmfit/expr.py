@@ -91,6 +91,12 @@ class Expr(object):
     def __rmul__(self, other):
         return OpExpr(operator.mul, lift_term(other), self)
 
+    def __truediv__(self, other):
+        return OpExpr(operator.div, self, lift_term(other))
+
+    def __rtruediv__(self, other):
+        return OpExpr(operator.div, lift_term(other), self)
+
     def __div__(self, other):
         return OpExpr(operator.div, self, lift_term(other))
 
