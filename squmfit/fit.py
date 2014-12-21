@@ -69,7 +69,8 @@ class Fit(object):
 
         :type weights: array, shape = [n_samples], optional
         :param weights:
-            An array of the weight of each sample.
+            An array of the weight of each sample. If not given
+            uniform weights are used.
 
         :type user_args: kwargs
         :param user_args:

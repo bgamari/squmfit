@@ -55,10 +55,10 @@ class Expr(object):
         Evaluate the model with the given parameter values.
 
         :type params: array, shape = [n_params]
-        :param params: Packed parameters
+        :param params: Packed parameters vector
 
         :type user_args: kwargs
-        :param user_args: keyword arguments
+        :param user_args: Keyword arguments from user
         """
         raise NotImplemented
 
