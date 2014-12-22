@@ -255,19 +255,9 @@ class FitResult(object):
         self._fit = fit
         self._initial = initial_result
         self._params = params
-        self._covar = covar_p
         self._curves = {curve.name: CurveResult(self, curve)
                         for curve in fit._curves}
-
-        self._stderr = None
-        self._correl = None
-        if self._covar is not None:
-            self._stderr = {name: np.sqrt(self.covar[name][name])
-                            for name in params}
-            self._correl = {name: {name2: self.covar[name][name2] / self.stderr[name] / self.stderr[name2]
-                                   for name2 in self.params
-                                   if name != name2}
-                            for name in self.params}
+        self._covar_p = covar_p
 
     @property
     def fit(self):
@@ -316,7 +306,7 @@ class FitResult(object):
 
         :rtype: dict of dicts, param_name -> param_name -> float or ``None``
         """
-        return self._covar
+        return self._covar_p
 
     @property
     def stderr(self):
@@ -325,7 +315,8 @@ class FitResult(object):
 
         :rtype: dict, param_name -> float or ``None``
         """
-        return self._stderr
+        return {name: np.sqrt(self._covar_p[name][name])
+                for name in self.params}
 
     @property
     def correl(self):
@@ -334,7 +325,11 @@ class FitResult(object):
 
         :rtype: dict, param_name -> param_name -> float or ``None``
         """
-        return self._correl
+        stderr = self.stderr
+        return {name: {name2: self._covar_p[name][name2] / stderr[name] / stderr[name2]
+                       for name2 in self.params
+                       if name != name2}
+                for name in self.params}
 
     @property
     def total_chi_sqr(self):
