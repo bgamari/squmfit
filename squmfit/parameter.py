@@ -74,10 +74,8 @@ class ParameterSet(object):
         """
         Unpack a parameter vector into a dictionary of parameter values.
         """
-        accum = {}
         if len(values) != len(self.params):
             raise RuntimeError("This parameter set has %d parameters, the given vector has %d." %
                                (len(self.params), len(values)))
-        for name, param in self.params.iteritems():
-            accum[name] = values[param.idx]
-        return accum
+        return {name: values[param.idx]
+                for name, param in self.params.iteritems()}
