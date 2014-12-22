@@ -48,6 +48,7 @@ class Fit(object):
         :param initial:
             The initial value of the parameter. If not provided then a
             value must be provided when :func:`fit` is called.
+        :rtype: :class:`.parameter.FittedParam`
         """
         return self.param_set.param(name, initial=initial)
 

@@ -18,6 +18,11 @@ The :class:`Expr` class
 .. autoclass:: Expr
    :members:
 
+The :class:`FittedParam` class
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: .parameter.FittedParam
+   :members:
 
 Fitting
 -------
