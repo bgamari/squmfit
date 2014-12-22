@@ -315,6 +315,8 @@ class FitResult(object):
 
         :rtype: dict, param_name -> float or ``None``
         """
+        if self._covar_p is None:
+            return None
         return {name: np.sqrt(self._covar_p[name][name])
                 for name in self.params}
 
@@ -325,6 +327,8 @@ class FitResult(object):
 
         :rtype: dict, param_name -> param_name -> float or ``None``
         """
+        if self._covar_p is None:
+            return None
         stderr = self.stderr
         return {name: {name2: self._covar_p[name][name2] / stderr[name] / stderr[name2]
                        for name2 in self.params
