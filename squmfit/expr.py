@@ -109,8 +109,14 @@ class Expr(object):
     def __rpow__(self, other):
         return OpExpr(operator.pow, lift_term(other), self)
 
+    # Used by numpy
+    def floor(self):
+        return OpExpr(np.floor, self)
+
+    def ceil(self):
+        return OpExpr(np.ceil, self)
+
     def exp(self):
-        # Used by numpy
         return OpExpr(np.exp, self)
 
 class FuncExpr(Expr):
