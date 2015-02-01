@@ -165,8 +165,7 @@ class FuncExpr(Expr):
             else:
                 return value
         eval_args = map(eval_term, self.args)
-        eval_kwargs = user_args.copy()
-        eval_kwargs.update({k: eval_term(v) for k,v in self.kwargs.iteritems()})
+        eval_kwargs = {k: eval_term(v) for k,v in self.kwargs.iteritems()}
         return self.func(*eval_args, **eval_kwargs)
 
     def parameters(self):
