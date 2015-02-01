@@ -203,3 +203,17 @@ class Constant(Expr):
 
     def parameters(self):
         return set()
+
+class Argument(Expr):
+    """
+    An :class:`Expr` which evaluates to a keyword argument passed at
+    evaluation-time.
+    """
+    def __init__(self, name):
+        self.name = name
+
+    def evaluate(self, params, **user_args):
+        return user_args[self.name]
+
+    def parameters(self):
+        return set()
