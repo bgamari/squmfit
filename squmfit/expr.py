@@ -70,6 +70,12 @@ class Expr(object):
         """
         raise NotImplemented
 
+    def map(self, f):
+        """
+        Lift a function into an :class:`Expr`.
+        """
+        return FuncExpr(f, self)
+
     def __neg__(self):
         return OpExpr(operator.neg, self)
 
