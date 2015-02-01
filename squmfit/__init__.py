@@ -1,5 +1,5 @@
 """
-Hello world
+squmfit --- Flexible non-linear least-squares fitting
 """
 
 from .expr import Model, Expr, FuncExpr

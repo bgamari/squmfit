@@ -222,7 +222,7 @@ class CurveResult(object):
     @property
     def residuals(self):
         """
-        The residuals of the fit
+        The weighted residuals of the fit.
 
         :rtype: ndarray
         """
@@ -262,7 +262,7 @@ class FitResult(object):
     @property
     def fit(self):
         """
-        The Fit for which these parameter apply.
+        The :class:`Fit` to which these parameter apply.
 
         :rtype: :class:`Fit`
         """
