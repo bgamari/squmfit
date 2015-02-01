@@ -7,6 +7,8 @@ class Model(object):
     """
     A Model is a function which can take either fixed arguments or
     parameters from a parameter vector.
+
+    This is essentially an adapter lifting a function into an `Expr`.
     """
 
     def __init__(self, eval, param_names=None):
@@ -16,7 +18,8 @@ class Model(object):
         :type eval: callable
         :param eval: The function to evalulate.
         :type param_names: list or str, optional
-        :param param_names: The names of the parameters expected by the model. These are passed to eval.
+        :param param_names: The names of the parameters expected by the model. This is to allow
+            validation of saturation of the argument list when an `Expr` is instantiated.
         """
         if param_names is None:
             import inspect
@@ -27,16 +30,20 @@ class Model(object):
             raise RuntimeError('Expected list of parameter names, found %s' % param_names)
         self.param_names = param_names
 
-        if eval is not None:
-            self.eval = eval
+        self.eval = eval
 
     def __call__(self, *args, **kwargs):
         """
-        Produce a closure which will invoke the :class:`Model`'s eval function
-        with the provided arguments, taking arguments from a parameters
-        vector as necessary.
+        Produce an :class:`Expr` which will invoke the `eval` function
+        with the provided arguments, taking arguments from the parameters
+        as appropriate.
         """
-        return FuncExpr(self, *args, **kwargs)
+        expected = self.param_names
+        given = kwargs.viewkeys()
+        if given != expected:
+            raise RuntimeError('Saw parameters %s, expected parameters %s' % (given, expected))
+
+        return FuncExpr(self.eval, *args, **kwargs)
 
 def lift_term(value):
     if isinstance(value, Expr):
@@ -131,6 +138,9 @@ class FuncExpr(Expr):
 
     Any arguments which are :class:`Expr` objects will be evaluated
     with :class:`Expr.evaluate` before being passed to the function.
+
+    This is essentially a wrapper lifting function application into
+    the `Expr` functor.
     """
 
     def __init__(self, func, *args, **kwargs):
@@ -157,13 +167,7 @@ class FuncExpr(Expr):
         eval_args = map(eval_term, self.args)
         eval_kwargs = user_args.copy()
         eval_kwargs.update({k: eval_term(v) for k,v in self.kwargs.iteritems()})
-        for name, value in zip(self.model.param_names, eval_args):
-            eval_kwargs[name] = value
-        if eval_kwargs.viewkeys() != set(self.model.param_names):
-            given = eval_kwargs.viewkeys()
-            expected = set(self.model.param_names)
-            raise RuntimeError('Saw parameters %s, expected parameters %s' % (given, expected))
-        return self.model.eval(**eval_kwargs)
+        return self.model(*eval_args, **eval_kwargs)
 
     def parameters(self):
         accum = set()
