@@ -11,7 +11,7 @@ class Model(object):
     This is essentially an adapter lifting a function into an `Expr`.
     """
 
-    def __init__(self, eval, param_names=None):
+    def __init__(self, eval, param_names=None, defaults={}):
         """
         Create a Model.
 
@@ -29,6 +29,7 @@ class Model(object):
         elif not isinstance(param_names, list):
             raise RuntimeError('Expected list of parameter names, found %s' % param_names)
         self.param_names = param_names
+        self.defaults = defaults
 
         self.eval = eval
 
@@ -43,6 +44,8 @@ class Model(object):
         if given != expected:
             raise RuntimeError('Saw parameters %s, expected parameters %s' % (given, expected))
 
+        kwargs = kwargs.copy()
+        kwargs.update(self.defaults)
         return FuncExpr(self.eval, *args, **kwargs)
 
 def lift_term(value):
