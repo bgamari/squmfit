@@ -67,7 +67,7 @@ class Expr(object):
         :type user_args: kwargs
         :param user_args: Keyword arguments from user
         """
-        raise NotImplemented
+        raise NotImplementedError()
 
     def parameters(self):
         """
@@ -75,7 +75,7 @@ class Expr(object):
 
         :rtype: :class:`set` of :class:`FittedParam`.
         """
-        raise NotImplemented
+        raise NotImplementedError()
 
     def map(self, f):
         """
