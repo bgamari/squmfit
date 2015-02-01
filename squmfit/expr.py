@@ -154,7 +154,7 @@ class FuncExpr(Expr):
         :param args: Ordered arguments to pass to the function.
         :param kwargs: Keyword arguments to pass to the function.
         """
-        self.model = func
+        self.func = func
         self.args = args
         self.kwargs = kwargs
 
@@ -167,7 +167,7 @@ class FuncExpr(Expr):
         eval_args = map(eval_term, self.args)
         eval_kwargs = user_args.copy()
         eval_kwargs.update({k: eval_term(v) for k,v in self.kwargs.iteritems()})
-        return self.model(*eval_args, **eval_kwargs)
+        return self.func(*eval_args, **eval_kwargs)
 
     def parameters(self):
         accum = set()
