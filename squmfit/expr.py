@@ -38,8 +38,8 @@ class Model(object):
         with the provided arguments, taking arguments from the parameters
         as appropriate.
         """
-        expected = self.param_names
-        given = kwargs.viewkeys()
+        expected = set(self.param_names)
+        given = set(kwargs.viewkeys())
         if given != expected:
             raise RuntimeError('Saw parameters %s, expected parameters %s' % (given, expected))
 
