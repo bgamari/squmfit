@@ -11,26 +11,16 @@ class Model(object):
     This is essentially an adapter lifting a function into an `Expr`.
     """
 
-    def __init__(self, eval, param_names=None, defaults={}):
+    def __init__(self, eval, defaults={}):
         """
         Create a Model.
 
         :type eval: callable
         :param eval: The function to evalulate.
-        :type param_names: list or str, optional
-        :param param_names: The names of the parameters expected by the model. This is to allow
-            validation of saturation of the argument list when an `Expr` is instantiated.
+        :type defaults: dict
+        :param defaults: Default parameter values
         """
-        if param_names is None:
-            import inspect
-            param_names = inspect.getargspec(eval).args
-        elif isinstance(param_names, str):
-            param_names = param_names.split()
-        elif not isinstance(param_names, list):
-            raise RuntimeError('Expected list of parameter names, found %s' % param_names)
-        self.param_names = param_names
         self.defaults = defaults
-
         self.eval = eval
 
     def __call__(self, *args, **kwargs):
@@ -39,14 +29,11 @@ class Model(object):
         with the provided arguments, taking arguments from the parameters
         as appropriate.
         """
-        expected = set(self.param_names)
-        given = set(kwargs.viewkeys())
-        if given != expected:
-            raise RuntimeError('Saw parameters %s, expected parameters %s' % (given, expected))
-
-        kwargs = kwargs.copy()
-        kwargs.update(self.defaults)
-        return FuncExpr(self.eval, *args, **kwargs)
+        import inspect
+        new_kwargs = self.defaults.copy()
+        new_kwargs.update(kwargs)
+        call_args = inspect.getcallargs(self.eval, *args, **new_kwargs)
+        return FuncExpr(self.eval, **call_args)
 
 def lift_term(value):
     if isinstance(value, Expr):
