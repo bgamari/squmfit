@@ -3,38 +3,6 @@ import operator
 import numpy as np
 import scipy.optimize
 
-class Model(object):
-    """
-    A Model is a function which can take either fixed arguments or
-    parameters from a parameter vector.
-
-    This is essentially an adapter lifting a function into an `Expr`.
-    """
-
-    def __init__(self, eval, defaults={}):
-        """
-        Create a Model.
-
-        :type eval: callable
-        :param eval: The function to evalulate.
-        :type defaults: dict
-        :param defaults: Default parameter values
-        """
-        self.defaults = defaults
-        self.eval = eval
-
-    def __call__(self, *args, **kwargs):
-        """
-        Produce an :class:`Expr` which will invoke the `eval` function
-        with the provided arguments, taking arguments from the parameters
-        as appropriate.
-        """
-        import inspect
-        new_kwargs = self.defaults.copy()
-        new_kwargs.update(kwargs)
-        call_args = inspect.getcallargs(self.eval, *args, **new_kwargs)
-        return FuncExpr(self.eval, **call_args)
-
 def model(func):
     """
     Decorate a function with this to wrap a function as an :class:`Expr` when
