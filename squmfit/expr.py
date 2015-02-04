@@ -35,6 +35,23 @@ class Model(object):
         call_args = inspect.getcallargs(self.eval, *args, **new_kwargs)
         return FuncExpr(self.eval, **call_args)
 
+def model(func):
+    """
+    Decorate a function with this to wrap a function as an :class:`Expr` when
+    the arguments to a call are `Expr`s.
+    """
+    def go(*args, **kwargs):
+        import inspect
+        is_expr = any(isinstance(v, Expr) for v in kwargs.values()) or \
+                  any(isinstance(v, Expr) for v in args)
+        if is_expr:
+            call_args = inspect.getcallargs(func, *args, **kwargs)
+            return FuncExpr(func, **call_args)
+        else:
+            return func(*args, **kwargs)
+
+    return go
+
 def lift_term(value):
     if isinstance(value, Expr):
         return value
