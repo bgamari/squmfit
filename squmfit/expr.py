@@ -135,6 +135,9 @@ class Expr(object):
     def exp(self):
         return OpExpr(np.exp, self)
 
+    def sqrt(self):
+        return OpExpr(np.sqrt, self)
+
 class FuncExpr(Expr):
     """
     An expression which calls a function.
