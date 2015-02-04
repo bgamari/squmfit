@@ -7,6 +7,16 @@ from .expr import Expr
 
 class Curve(object):
     def __init__(self, name, model, data, weights=None, **user_args):
+        """
+        A curve to be fit against.
+
+        :param name: A friendly name for the curve.
+        :type model: :class:`Expr`
+        :param model: The model to fix against.
+        :tyep weights: array of shape `(nsamples,)`
+        :param data: The values of the dependent variable to fit against.
+        :param weights: Weighing factors.
+        """
         # These shalln't be mutated
         self.name = name
         self.model = model
