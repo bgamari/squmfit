@@ -38,6 +38,7 @@ class ParameterSet(object):
             name = 'param%d' % i
             if name not in used:
                 return name
+            i += 1
 
     def initial_params(self):
         return {name: param.initial
