@@ -210,7 +210,7 @@ class CurveResult(object):
         params = fit_result.params
         self._fit_result = fit_result
         self._curve = curve
-        self._fit = self.curve.eval_packed(self.fit_result.fit.param_set._pack(params))
+        self._fit = self.eval()
         self._residuals = self.curve.residuals_packed(self.fit_result.fit.param_set._pack(params))
         self._chi_sqr = sum(self.residuals**2)
 
@@ -282,6 +282,13 @@ class CurveResult(object):
         :rtype: float
         """
         return self.chi_sqr / self.degrees_of_freedom
+
+    def eval(self, **user_args):
+        """
+        Evaluate the curve's model with overridden user arguments.
+        """
+        packed = self.fit_result.fit.param_set._pack(self.fit_result.params)
+        return self.curve.eval_packed(packed, **user_args)
 
 class FitResult(object):
     """
