@@ -3,6 +3,7 @@ from copy import deepcopy
 import numpy as np
 import scipy.optimize
 from .parameter import ParameterSet
+from .expr import Expr
 
 class Curve(object):
     def __init__(self, name, model, data, weights=None, **user_args):
@@ -77,6 +78,8 @@ class Fit(object):
         :param user_args:
             Keyword arguments passed to the model during evaluation.
         """
+        if not isinstance(model, Expr):
+            raise ValueError('Given model (%s) must be instance of Expr' % model)
         curve = Curve(name, model, data, weights, **user_args)
         self._curves.append(curve)
 
