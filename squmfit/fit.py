@@ -12,17 +12,41 @@ class Curve(object):
 
         :param name: A friendly name for the curve.
         :type model: :class:`Expr`
-        :param model: The model to fix against.
+        :param model: The model to be fitted.
         :tyep weights: array of shape `(nsamples,)`
         :param data: The values of the dependent variable to fit against.
         :param weights: Weighing factors.
         """
-        # These shalln't be mutated
-        self.name = name
-        self.model = model
-        self.data = data
-        self.weights = weights
-        self.user_args = user_args
+        self._name = name
+        self._model = model
+        self._data = data
+        self._weights = weights
+        self._user_args = user_args
+
+    @property
+    def name(self):
+        """ The friendly name of the curve """
+        return self._name
+
+    @property
+    def model(self):
+        """ The model to be fitted """
+        return self._model
+
+    @property
+    def data(self):
+        """ The values of the dependent variable to be fitted against """
+        return self._data
+
+    @property
+    def weights(self):
+        """ The fitting weights """
+        return self._weights
+
+    @property
+    def user_args(self):
+        """ User arguments """
+        return self._user_args
 
     def eval_packed(self, params, **user_args):
         """ Evaluate the model """
