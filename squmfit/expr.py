@@ -5,8 +5,9 @@ import scipy.optimize
 
 def model(func):
     """
-    Decorate a function with this to wrap a function as an :class:`Expr` when
-    the arguments to a call are `Expr`s.
+    Transforms a function to ensure that all of its parameters are
+    evaluated. Calls to the transformed function will result in an
+    :class:`Expr` when any of its parameters are ``Exprs``.
     """
     def go(*args, **kwargs):
         import inspect

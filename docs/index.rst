@@ -33,7 +33,11 @@ library supports the ability to simultaneously fit multiple data sets,
 each with its own model, over a common set of parameters.
 
 In constrast to `lmfit`_, `squmfit` treats the free parameters of the
-the fit as first-class objects.
+the fit as first-class objects. This allows models to be built up,
+added, multiplied, and generally treated as standard Python
+expressions. Moreover, no assumptions are imposed regarding how
+parameters interact, allowing fitting of a common set of parameters
+over several data sets.
 
 A simple example
 ~~~~~~~~~~~~~~~~~
@@ -49,24 +53,25 @@ We first define the functional form which we believe describes our
 data (or use one of the models provided in the :mod:`squmfit.models`
 module),
 
-    >>> from squmfit import Model
+    >>> import squmfit
     >>> def exponential_model(t, amplitude, rate):
     >>>     return amplitude * np.exp(-t * rate)
-    >>> ExpModel = Model(exponential_model)
 
 We then create a :class:`Fit` object which we will use to define the
 parameters and objective of our fit,
 
-    >>> from squmfit import Fit
-    >>> fit = Fit()
+    >>> fit = squmfit.Fit()
 
 Say we want to fit this model to our generated ``ys``, allowing
-both the ``amplitude`` and ``rate`` parameters to vary. This can be
-defined as,
+both the ``amplitude`` and ``rate`` parameters to vary. We first need
+to tell ``squmfit`` about these parameters,
 
     >>> amp = fit.param('amp', initial=100)
     >>> tau = fit.param('tau', initial=100)
-    >>> model = ExpModel(xs, amp, 1. / tau)
+
+Now we can use ``amp`` and ``tau`` as normal Python variables,
+
+    >>> model = exponential_model(xs, amp, 1. / tau)
 
 Note how we can write expressions involving parameters, such as ``1. /
 tau``, greatly simplifying parameter specification.  Next we add our
@@ -86,6 +91,31 @@ Finally we can run our fit and poke around at the results,
     >>> print res.curves['a'].reduced_chi_sqr
     0.949579885697
 
+How does it work?
+~~~~~~~~~~~~~~~~~
+
+Expressions in ``squmfit`` are represented by the :class:`Expr`
+class. An ``Expr`` captures an abstract syntax tree that describes
+*how* a result can be computed. The elementary expressions could
+represent a fitted parameter (e.g. ``amp``) in the example above, or
+an expression depending upon a fitted parameter. The ``Expr`` class
+implements basic arithmetic operations (e.g. ``__add__``) and numpy's
+ufuncs (e.g. ``sqrt``), allowing it to be treated as a standard
+scalar.
+
+Of course, some functions require more structure beyond the operations
+supported by ``Expr`` evaluate their result. In this case, you can
+tell ``squmfit`` that you want the function arguments to be evaluated
+before they are provided to your function with the :func:`model`
+decorator,
+
+    >>> @squmfit.model
+    >>> def sum_odds(vec):
+    >>>     return vec[1::2].sum()
+
+.. autofunction:: squmfit.model
+   :noindex:
+
 Fitting
 --------
 
@@ -101,15 +131,10 @@ Inspecting fit results
 .. autoclass:: squmfit.FitResult
    :noindex:
 
-Defining a Model
------------------
+Functional interpretation
+-------------------------
 
-Defining a model is simply a matter of passing the function to the
-:class:`Model` constructor,
-
-    >>> def exponential_model(t, amplitude, rate):
-    >>>     return amplitude * np.exp(-t * rate)
-    >>> ExpModel = Model(exponential_model)
-
-.. autoclass:: squmfit.Model
-   :noindex:
+The architecture of ``squmfit`` is inspired by patterns used widely in
+Haskell and other functional languages. The :class:`Expr` class is an
+applicative functor and reader monad having access to an environment
+containing packed parameter values.

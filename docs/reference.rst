@@ -6,26 +6,26 @@ API Reference
 Building models
 ---------------
 
-The :class:`Model` class
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: Model
-   :members:
-
 The :class:`Expr` class
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: Expr
    :members:
 
+Evaluating Exprs
+~~~~~~~~~~~~~~~~
+
+.. autofunction:: model
+
+
 The :class:`FittedParam` class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: .parameter.FittedParam
+.. autoclass:: squmfit.parameter.FittedParam
    :members:
 
-Fitting
--------
+Performing fits
+---------------
 
 The :class:`Fit` class
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -45,8 +45,16 @@ The :class:`CurveResult` class
 .. autoclass:: CurveResult
    :members:
 
-Rendering results
------------------
+Rendering fit results
+---------------------
+
+Text
+~~~~
 
 .. automodule:: squmfit.pretty
+   :members:
+
+Plotting
+~~~~~~~~
 .. automodule:: squmfit.plot
+   :members:
