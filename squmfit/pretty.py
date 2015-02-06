@@ -23,7 +23,7 @@ def show_fit_result(result, min_corr=0.5):
         accum += 'The covariance could not be calculated.\n'
     else:
         if min_corr > 0:
-            accum += 'Correlations less than %f have been omitted.\n\n' % min_corr
+            accum += 'Correlations less than %1.1f have been omitted.\n\n' % min_corr
         correls = {(param1,param2): result.correl[param1][param2]
                    for param1 in result.params.keys()
                    for param2 in result.params.keys()
@@ -68,7 +68,7 @@ def html_fit_result(result, min_corr=0.5):
         accum += '<p>The covariance could not be calculated.</p>\n'
     else:
         if min_corr > 0:
-            accum += '<p>Correlations less than <em>%f</em> have been omitted.</p>\n\n' % min_corr
+            accum += '<p>Correlations less than <em>%1.1f</em> have been omitted.</p>\n\n' % min_corr
 
         correls = {(param1,param2): result.correl[param1][param2]
                    for param1 in result.params.keys()
