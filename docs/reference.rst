@@ -44,3 +44,9 @@ The :class:`CurveResult` class
 
 .. autoclass:: CurveResult
    :members:
+
+Rendering results
+-----------------
+
+.. automodule:: squmfit.pretty
+.. automodule:: squmfit.plot
