@@ -398,3 +398,7 @@ class FitResult(object):
         :rtype: float
         """
         return sum(curve.chi_sqr for curve in self.curves.values())
+
+    def _repr_html_(self):
+        from .pretty import ipynb_fit_result
+        return ipynb_fit_result(self)
