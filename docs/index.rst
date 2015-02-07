@@ -87,14 +87,14 @@ specifying the model to which we wish to fit along with some weights
 
     >>> weights = np.zeros_like(ys, dtype='f')
     >>> weights[ys > 0] = 1 / np.sqrt(ys[ys > 0])
-    >>> fit.add_curve('a', model, ys, weights=weights)
+    >>> fit.add_curve('curve1', model, ys, weights=weights)
 
 Finally we can run our fit and poke around at the results,
 
     >>> res = fit.fit()
     >>> print res.params
     {'amp': 403.01725751512635, 'tau': 393.19866908823133}
-    >>> print res.curves['a'].reduced_chi_sqr
+    >>> print res.curves['curve1'].reduced_chi_sqr
     0.949579885697
 
 ``res`` is a :class:`FitResult` object, which contains a variety of
@@ -103,12 +103,12 @@ fit values.
 
 ``squmfit`` has a variety of options for presenting the results of a
 fit. :mod:`squmfit.pretty` has several utilities for producing a
-quantitative summary of the fit.
-
-.. autofunction:: squmfit.pretty.markdown_fit_result
-   :noindex:
-.. autofunction:: squmfit.pretty.ipynb_fit_result
-   :noindex:
+quantitative summary of the fit. For instance,
+:function:`squmfit.pretty.markdown_fit_result` will produce a Markdown
+document describing the fit parameters and various goodness-of-fit
+metrics. If you use IPython Notebook,
+:function:`squmfit.pretty.ipynb_fit_result` can be used to generate a
+presentation that can be rendered in rich HTML within the notebook,
 
 Finally, :mod:`squmfit.plot` can be used to plot fits and residuals.
 
