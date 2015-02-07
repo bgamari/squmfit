@@ -54,10 +54,18 @@ class Curve(object):
         args.update(user_args)
         return self.model.evaluate(params, **args)
 
-    def residuals_packed(self, params, **user_args):
-        """ Compute the weighed residuals """
+    def residuals_packed(self, params, weighted=True, **user_args):
+        """
+        Compute the residuals between the curve and its model (:math:`model - data`).
+
+        :type params: array of shape (nparams,)
+        :param params: Packed array of parameter values.
+        :type weighted: bool
+        :param weighted: If False weights are ignored.
+        :rtype: array of shape (npoints,)
+        """
         residuals = self.eval_packed(params, **user_args) - self.data
-        if self.weights is not None:
+        if weighted and self.weights is not None:
             residuals *= self.weights
         return residuals
 
@@ -105,8 +113,10 @@ class Fit(object):
 
         :type weights: array, shape = [n_samples], optional
         :param weights:
-            An array of the weight of each sample. If not given
-            uniform weights are used.
+            An array of the weight of each sample. Often this is
+            :math:`1 / \sigma` where `\sigma` is the standard
+            deviation of the dependent value. If not given uniform
+            weights are used.
 
         :type user_args: kwargs
         :param user_args:
@@ -132,12 +142,12 @@ class Fit(object):
         return {curve.name: curve.eval_packed(params, **user_args)
                 for curve in self._curves}
 
-    def residuals_packed(self, params, **user_args):
+    def residuals_packed(self, params, weighted=True, **user_args):
         """
         Compute the weighed residuals against packed paramater
         values. See :func:`eval_packed` for parameter descriptions.
         """
-        return {curve.name: curve.residuals_packed(params, **user_args)
+        return {curve.name: curve.residuals_packed(params, weighted, **user_args)
                 for curve in self._curves}
 
     def eval(self, params, **user_args):
@@ -155,13 +165,13 @@ class Fit(object):
         """
         return self.eval_packed(self.param_set._pack(params), **user_args)
 
-    def residuals(self, params, **user_args):
+    def residuals(self, params, weighted=True, **user_args):
         """
         Evaluate the weighted model residuals against a dictionary of
         parameters values. See :func:`eval` for parameter
         descriptions.
         """
-        return self.residuals_packed(self.param_set._pack(params), **user_args)
+        return self.residuals_packed(self.param_set._pack(params), weighted, **user_args)
 
     def fit(self, params0=None, **user_args):
         """
