@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-def show_fit_result(result, min_corr=0.5):
+def markdown_fit_result(result, min_corr=0.5):
     """
     Pretty-print a fit result as a Markdown-formatted string
 
