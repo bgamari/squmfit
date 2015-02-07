@@ -208,6 +208,11 @@ class FuncExpr(Expr):
                 accum.update(p.parameters())
         return accum
 
+    def __str__(self):
+        args = [str(arg) for arg in self.args]
+        kwargs = ['%s=%s' % (k, str(v)) for k,v in self.kwargs]
+        return "<FuncExpr %s(%s)>" % (self.op.__name__, ', '.join(args, kwargs))
+
 class OpExpr(Expr):
     """ A helper used by arithmetic operations """
     def __init__(self, op, *operands):
@@ -222,6 +227,9 @@ class OpExpr(Expr):
         accum.update(*[a.parameters() for a in self.operands])
         return accum
 
+    def __str__(self):
+        return "<OpExpr %s(%s)>" % (self.op.__name__, ', '.join(str(o) for o in self.operands))
+
 class Constant(Expr):
     """ An :class:`Expr` which always evaluates to the given value """
     def __init__(self, value):
@@ -232,6 +240,9 @@ class Constant(Expr):
 
     def parameters(self):
         return set()
+
+    def __str__(self):
+        return "<Constant %s>" % str(self.value)
 
 class Argument(Expr):
     """
@@ -246,3 +257,6 @@ class Argument(Expr):
 
     def parameters(self):
         return set()
+
+    def __str__(self):
+        return "<Argument %s>" % self.name
