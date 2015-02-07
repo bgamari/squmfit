@@ -211,7 +211,7 @@ class FuncExpr(Expr):
     def __str__(self):
         args = [str(arg) for arg in self.args]
         kwargs = ['%s=%s' % (k, str(v)) for k,v in self.kwargs]
-        return "<FuncExpr %s(%s)>" % (self.op.__name__, ', '.join(args, kwargs))
+        return "%s(%s)" % (self.op.__name__, ', '.join(args, kwargs))
 
 class OpExpr(Expr):
     """ A helper used by arithmetic operations """
@@ -228,7 +228,7 @@ class OpExpr(Expr):
         return accum
 
     def __str__(self):
-        return "<OpExpr %s(%s)>" % (self.op.__name__, ', '.join(str(o) for o in self.operands))
+        return "%s(%s)" % (self.op.__name__, ', '.join(str(o) for o in self.operands))
 
 class Constant(Expr):
     """ An :class:`Expr` which always evaluates to the given value """
@@ -242,7 +242,7 @@ class Constant(Expr):
         return set()
 
     def __str__(self):
-        return "<Constant %s>" % str(self.value)
+        return str(self.value)
 
 class Argument(Expr):
     """
@@ -259,4 +259,4 @@ class Argument(Expr):
         return set()
 
     def __str__(self):
-        return "<Argument %s>" % self.name
+        return "Argument(%s)" % self.name
