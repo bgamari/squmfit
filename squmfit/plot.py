@@ -5,7 +5,8 @@ from numpy import log10
 import matplotlib.pyplot as pl
 from matplotlib import gridspec
 
-def plot_fit(x, result, range=None, log_x=False, errorbars=True, fig=None, with_residuals=True, legend_kwargs={}):
+def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None, with_residuals=True,
+             legend_kwargs={}):
     """
     Plot the result of a fit.
 
@@ -36,9 +37,9 @@ def plot_fit(x, result, range=None, log_x=False, errorbars=True, fig=None, with_
     ax_fits.set_xlim(range[0], range[1])
 
     for curve in result.curves.values():
-        pts_artist, fit_artist = plot_curve(x, curve, log_x=log_x, axes=ax_fits, errorbars=errorbars)
+        pts_artist, fit_artist = plot_curve(x, curve, xscale=xscale, axes=ax_fits, errorbars=errorbars)
         if ax_residuals is not None:
-            plot_curve_residuals(x, curve, log_x=log_x, axes=ax_residuals,
+            plot_curve_residuals(x, curve, xscale=xscale, axes=ax_residuals,
                                  c=pts_artist.lines[0].get_color( ))
             
     ax_legend = gs[0:1, 1]
@@ -53,7 +54,7 @@ def plot_fit(x, result, range=None, log_x=False, errorbars=True, fig=None, with_
     return (ax_fits, ax_residuals)
         
 def plot_curve(x, result, range=None, axes=None, npts=300,
-               log_x=False, errorbars=True, label=None, **kwargs):
+               xscale='linear', errorbars=True, label=None, **kwargs):
     """
     Plot the result of a fit against a curve.
 
@@ -74,9 +75,9 @@ def plot_curve(x, result, range=None, axes=None, npts=300,
     yerr = 1. / curve.weights if errorbars and curve.weights is not None else None
     pts_artist = axes.errorbar(xs, curve.data, yerr=yerr, ls='', **kwargs)
 
-    if log_x:
+    axes.set_xscale(xscale)
+    if xscale in ['log', 'symlog']:
         interp_x = np.logspace(log10(range[0]), log10(range[1]), npts)
-        axes.set_xscale('log')
     else:
         interp_x = np.linspace(range[0], range[1], npts)
 
@@ -85,12 +86,12 @@ def plot_curve(x, result, range=None, axes=None, npts=300,
                            c=pts_artist.lines[0].get_color())
     return (pts_artist, fit_artist)
 
-def plot_curve_residuals(x, result, range=None, axes=None, npts=300, log_x=False, **kwargs):
+def plot_curve_residuals(x, result, range=None, axes=None, npts=300, xscale='linear', **kwargs):
     xs = result.curve.user_args[x]
     if range is None:
         range = (xs[0], xs[-1])
 
     curve = result.curve
     fit_result = result.fit_result
-    if log_x: axes.set_xscale('log')
+    axes.set_xscale(xscale)
     axes.scatter(xs, result.residuals, marker='+', **kwargs)
