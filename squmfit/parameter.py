@@ -16,6 +16,9 @@ class FittedParam(Expr):
     def parameters(self):
         return set([self])
 
+    def __str__(self):
+        return 'Parameter %s' % self.name
+
 class ParameterSet(object):
     """
     This object represents a set of parameters and how they can be
