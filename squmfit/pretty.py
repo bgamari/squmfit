@@ -97,5 +97,12 @@ def html_fit_result(result, min_corr=0.5):
     return accum
 
 def ipynb_fit_result(result, min_corr=0.5):
+    """
+    Produce a :class:`HTML` summary of a :class:`FitResult` suitable
+    for rendering by IPython notebook.
+
+    :type result: :class:`FitResult`
+    :param result: The result to summarize.
+    """
     from IPython.core.display import HTML
     return HTML(html_fit_result(result, min_corr))
