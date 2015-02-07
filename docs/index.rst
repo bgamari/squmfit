@@ -32,7 +32,7 @@ can be easily composed to describe complex data sets. Moreover, the
 library supports the ability to simultaneously fit multiple data sets,
 each with its own model, over a common set of parameters.
 
-In constrast to `lmfit`_, `squmfit` treats the free parameters of the
+In contrast to `lmfit`_, `squmfit` treats the free parameters of the
 the fit as first-class objects. This allows models to be built up,
 added, multiplied, and generally treated as standard Python
 expressions. Moreover, no assumptions are imposed regarding how
