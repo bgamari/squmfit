@@ -73,11 +73,17 @@ Now we can use ``amp`` and ``tau`` as normal Python variables,
 
     >>> model = exponential_model(xs, amp, 1. / tau)
 
-Note how we can write expressions involving parameters, such as ``1. /
-tau``, greatly simplifying parameter specification.  Next we add our
-curve to our ``Fit``, specifying the model to which we wish to fit
-along with some weights (taking care to avoid division-by-zero, of
-course),
+Alternatively we could simply do away with the function altogether,
+
+    >>> model = amp * np.exp(-t / tau)
+
+Note how we can write expressions involving parameters with the usual
+Python arithmetic operations, such as ``1. / tau``, greatly
+simplifying model composition.
+
+Next we add our curve to our ``Fit``,
+specifying the model to which we wish to fit along with some weights
+(taking care to avoid division-by-zero, of course),
 
     >>> weights = np.zeros_like(ys, dtype='f')
     >>> weights[ys > 0] = 1 / np.sqrt(ys[ys > 0])
@@ -90,6 +96,22 @@ Finally we can run our fit and poke around at the results,
     {'amp': 403.01725751512635, 'tau': 393.19866908823133}
     >>> print res.curves['a'].reduced_chi_sqr
     0.949579885697
+
+``res`` is a :class:`FitResult` object, which contains a variety of
+information about the fit, including the residuals, covariances, and
+fit values.
+
+``squmfit`` has a variety of options for presenting the results of a
+fit. :mod:`squmfit.pretty` has several utilities for producing a
+quantitative summary of the fit.
+
+.. autofunction:: squmfit.pretty.markdown_fit_result
+   :noindex:
+.. autofunction:: squmfit.pretty.ipynb_fit_result
+   :noindex:
+
+Finally, :mod:`squmfit.plot` can be used to plot fits and residuals.
+
 
 How does it work?
 ~~~~~~~~~~~~~~~~~
