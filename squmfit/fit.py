@@ -13,7 +13,7 @@ class Curve(object):
         :param name: A friendly name for the curve.
         :type model: :class:`Expr`
         :param model: The model to be fitted.
-        :tyep weights: array of shape `(nsamples,)`
+        :type weights: array of shape `(nsamples,)`
         :param data: The values of the dependent variable to fit against.
         :param weights: Weighing factors.
         """
