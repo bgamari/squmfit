@@ -28,6 +28,21 @@ def lift_term(value):
     else:
         return Constant(value)
 
+def ufunc1(func):
+    def go(x, out=None):
+        if out is not None:
+            raise ValueError("squmfit.Expr ufuncs don't support output arrays")
+        return OpExpr(func, x)
+    go.__doc__ = func.__doc__
+    return go
+
+def ufunc2(func):
+    def go(x1, x2, out=None):
+        if out is not None:
+            raise ValueError("squmfit.Expr ufuncs don't support output arrays")
+        return OpExpr(func, x1, x2)
+    return go
+
 class Expr(object):
     """
     An expression capable of taking parameters from a packed parameter
@@ -101,66 +116,73 @@ class Expr(object):
     def __rpow__(self, other):
         return OpExpr(operator.pow, lift_term(other), self)
 
-    # Used by numpy
-    def add(self, other):
-        return OpExpr(np.add, self, other)
+    # numpy ufuncs
+    # Math operations
+    add          = ufunc2(np.add)
+    subtract     = ufunc2(np.subtract)
+    multiply     = ufunc2(np.multiply)
+    divide       = ufunc2(np.divide)
+    logaddexp    = ufunc2(np.logaddexp)
+    logaddexp2   = ufunc2(np.logaddexp2)
+    true_divide  = ufunc2(np.true_divide)
+    floor_divide = ufunc2(np.floor_divide)
+    negative     = ufunc1(np.negative)
+    power        = ufunc2(np.power)
+    remainder    = ufunc2(np.remainder)
+    mod          = ufunc2(np.mod)
+    fmod         = ufunc2(np.fmod)
+    absolute     = ufunc1(np.absolute)
+    rint         = ufunc1(np.rint)
+    sign         = ufunc1(np.sign)
+    conj         = ufunc1(np.conj)
+    exp          = ufunc1(np.exp)
+    log          = ufunc1(np.log)
+    log2         = ufunc1(np.log2)
+    log10        = ufunc1(np.log10)
+    expm1        = ufunc1(np.expm1)
+    log1p        = ufunc1(np.log1p)
+    sqrt         = ufunc1(np.sqrt)
+    square       = ufunc1(np.square)
+    reciprocal   = ufunc1(np.reciprocal)
 
-    def subtract(self, other):
-        return OpExpr(np.subtract, self, other)
+    # Trigonometric functions
+    sin     = ufunc1(np.sin)
+    cos     = ufunc1(np.cos)
+    tan     = ufunc1(np.tan)
+    arcsin  = ufunc1(np.arcsin)
+    arccos  = ufunc1(np.arccos)
+    arctan  = ufunc1(np.arctan)
+    arctan2 = ufunc2(np.arctan2)
+    hypot   = ufunc2(np.hypot)
+    sinh    = ufunc1(np.sinh)
+    cosh    = ufunc1(np.cosh)
+    tanh    = ufunc1(np.tanh)
+    arcsinh = ufunc1(np.arcsinh)
+    arccosh = ufunc1(np.arccosh)
+    arctanh = ufunc1(np.arctanh)
+    deg2rad = ufunc1(np.deg2rad)
+    rad2deg = ufunc1(np.rad2deg)
 
-    def multiply(self, other):
-        return OpExpr(np.multiply, self, other)
+    # Comparison functions
+    greater       = ufunc2(np.greater)
+    greater_equal = ufunc2(np.greater_equal)
+    less          = ufunc2(np.less)
+    less_equal    = ufunc2(np.less_equal)
+    not_equal     = ufunc2(np.not_equal)
+    equal         = ufunc2(np.equal)
+    logical_and   = ufunc2(np.logical_and)
+    logical_or    = ufunc2(np.logical_or)
+    logical_xor   = ufunc2(np.logical_xor)
+    logical_not   = ufunc2(np.logical_not)
+    maximum       = ufunc2(np.maximum)
+    minimum       = ufunc2(np.minimum)
+    fmax          = ufunc2(np.fmax)
+    fmin          = ufunc2(np.fmin)
 
-    def divide(self, other):
-        return OpExpr(np.divide, self, other)
-
-    def logaddexp(self, other):
-        return OpExpr(np.logaddexp, self, other)
-
-    def logaddexp2(self, other):
-        return OpExpr(np.logaddexp2, self, other)
-
-    def true_divide(self, other):
-        return OpExpr(np.true_divide, self, other)
-
-    def floor_divide(self, other):
-        return OpExpr(np.floor_divide, self, other)
-
-    def negative(self, other):
-        return OpExpr(np.negative, self, other)
-
-    def power(self, other):
-        return OpExpr(np.log1p, self, other)
-
-    def remainder(self, other):
-        return OpExpr(np.remainder, self, other)
-
-    def floor(self):
-        return OpExpr(np.floor, self)
-
-    def ceil(self):
-        return OpExpr(np.ceil, self)
-
-    def sqrt(self):
-        return OpExpr(np.sqrt, self)
-
-    def exp(self):
-        return OpExpr(np.exp, self)
-
-    def log(self):
-        return OpExpr(np.log, self)
-
-    def log2(self):
-        return OpExpr(np.log2, self)
-
-    def log10(self):
-        return OpExpr(np.log10, self)
-
-    def expm1(self):
-        return OpExpr(np.expm1, self)
-
-    def log1p(self):
-        return OpExpr(np.log1p, self)
+    # Floating functions
+    floor     = ufunc1(np.floor)
+    ceil      = ufunc1(np.ceil)
+    trunc     = ufunc1(np.trunc)
 
 class FuncExpr(Expr):
     """
