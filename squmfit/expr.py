@@ -19,6 +19,7 @@ def model(func):
         else:
             return func(*args, **kwargs)
 
+    go.__doc__  = func.__doc__
     return go
 
 def lift_term(value):
