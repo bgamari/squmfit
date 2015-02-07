@@ -31,7 +31,9 @@ def lift_term(value):
 class Expr(object):
     """
     An expression capable of taking parameters from a packed parameter
-    vector. All of the usual arithmetic operations are supported.
+    vector. All of the usual Python arithmetic operations are
+    supported as well as a good fraction of the Numpy ufuncs. Note,
+    however, that the ufuncs' ``out`` parameter is not supported.
     """
 
     def evaluate(self, params, **user_args):
@@ -100,17 +102,65 @@ class Expr(object):
         return OpExpr(operator.pow, lift_term(other), self)
 
     # Used by numpy
+    def add(self, other):
+        return OpExpr(np.add, self, other)
+
+    def subtract(self, other):
+        return OpExpr(np.subtract, self, other)
+
+    def multiply(self, other):
+        return OpExpr(np.multiply, self, other)
+
+    def divide(self, other):
+        return OpExpr(np.divide, self, other)
+
+    def logaddexp(self, other):
+        return OpExpr(np.logaddexp, self, other)
+
+    def logaddexp2(self, other):
+        return OpExpr(np.logaddexp2, self, other)
+
+    def true_divide(self, other):
+        return OpExpr(np.true_divide, self, other)
+
+    def floor_divide(self, other):
+        return OpExpr(np.floor_divide, self, other)
+
+    def negative(self, other):
+        return OpExpr(np.negative, self, other)
+
+    def power(self, other):
+        return OpExpr(np.log1p, self, other)
+
+    def remainder(self, other):
+        return OpExpr(np.remainder, self, other)
+
     def floor(self):
         return OpExpr(np.floor, self)
 
     def ceil(self):
         return OpExpr(np.ceil, self)
 
+    def sqrt(self):
+        return OpExpr(np.sqrt, self)
+
     def exp(self):
         return OpExpr(np.exp, self)
 
-    def sqrt(self):
-        return OpExpr(np.sqrt, self)
+    def log(self):
+        return OpExpr(np.log, self)
+
+    def log2(self):
+        return OpExpr(np.log2, self)
+
+    def log10(self):
+        return OpExpr(np.log10, self)
+
+    def expm1(self):
+        return OpExpr(np.expm1, self)
+
+    def log1p(self):
+        return OpExpr(np.log1p, self)
 
 class FuncExpr(Expr):
     """
