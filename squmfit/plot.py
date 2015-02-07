@@ -12,6 +12,16 @@ def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None, w
 
     :param x: A key found in `user_args` for each curve in the fit
     :type result: :class:`FitResult`
+    :type range: tuple of ``floats``
+    :param range: Range of abscissa
+    :type xscale: 'linear', 'log', or 'symlog'
+    :param xscale: The scale to use for the X axis (see :function:`pl.xscale`).
+    :type errorbars: bool
+    :param errorbars: Plot errorbars on points.
+    :type fig: :class:`pl.Figure`
+    :param fig: The figure on which to plot.
+    :type with_residuals: bool
+    :param with_residuals: Plot residuals alongside 
     :param legend_kwargs: Keyword arguments passed to :func:`pl.legend`.
     """
 
