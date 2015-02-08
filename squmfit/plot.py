@@ -5,25 +5,28 @@ from numpy import log10
 import matplotlib.pyplot as pl
 from matplotlib import gridspec
 
-def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None, with_residuals=True,
-             abs_residuals=False, legend_kwargs={}):
+def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None,
+             with_residuals=True, abs_residuals=False, residual_range=None,
+             legend_kwargs={}):
     """
     Plot the result of a fit.
 
     :param x: A key found in `user_args` for each curve in the fit
     :type result: :class:`FitResult`
-    :type range: tuple of ``floats``
+    :type range: ``(xmin, xmax)``, optional
     :param range: Range of abscissa
     :type xscale: 'linear', 'log', or 'symlog'
     :param xscale: The scale to use for the X axis (see :func:`pl.xscale`).
     :type errorbars: bool
     :param errorbars: Plot errorbars on points.
-    :type fig: :class:`pl.Figure`
+    :type fig: :class:`pl.Figure`, optional
     :param fig: The figure on which to plot.
     :type with_residuals: bool
     :param with_residuals: Plot residuals alongside fit
     :type abs_residuals: bool
     :param abs_residuals: Whether to plot weighted (relative) or unweighted (absolute residuals).
+    :type residual_range: ``(ymin, ymax)``, optional
+    :param residual_range: Y range of residual plot
     :param legend_kwargs: Keyword arguments passed to :func:`pl.legend`.
     """
 
@@ -103,14 +106,15 @@ def plot_curve(x, result, range=None, axes=None, npts=300,
                            c=pts_artist.lines[0].get_color())
     return (pts_artist, fit_artist)
 
-def plot_curve_residuals(x, result, range=None, axes=None, xscale='linear', abs_residuals=False,
+def plot_curve_residuals(x, result, range=None, axes=None, xscale='linear',
+                         abs_residuals=False, residual_range=None,
                          **kwargs):
     """
     Plot the residuals of a curve.
 
     :param x: A key found in the `user_args` for the curve.
     :type result: :class:`CurveResult`
-    :type range: tuple of two floats
+    :type range: ``(xmin, xmax)``, optional
     :param range: The limits of the X axis
     :type xscale: 'linear', 'log', or 'symlog'
     :param xscale: The scale to use for the X axis (see :func:`pl.xscale`).
@@ -118,6 +122,8 @@ def plot_curve_residuals(x, result, range=None, axes=None, xscale='linear', abs_
     :param axes: Axes to plot on.
     :type abs_residuals: bool
     :param abs_residuals: Whether to plot weighted (relative) or unweighted (absolute residuals).
+    :type residual_range: ``(ymin, ymax)``, optional
+    :param residual_range: Y range of residual plot
     :param kwargs: Keyword arguments to be passed to :func:`Axes.scatter`.
     """
     xs = result.curve.user_args[x]
@@ -128,4 +134,6 @@ def plot_curve_residuals(x, result, range=None, axes=None, xscale='linear', abs_
     fit_result = result.fit_result
     axes.set_xscale(xscale)
     axes.scatter(xs, result.residuals, marker='+', **kwargs)
+    if residual_range is not None:
+        axes.set_yrange(residual_range[0], residual_range[1])
     # TODO: Implement abs_residuals
