@@ -63,6 +63,16 @@ class Expr(object):
         """
         raise NotImplementedError()
 
+    @property
+    def gradient(self):
+        """
+        The gradient of the expression with respect to the fitted
+        parameters or raise a :class:`ValueError` if not applicable.
+
+        :rtype: :class:`Expr` evaluating to array of shape ``(Nparams,)``
+        """
+        return FiniteDiffGrad(self)
+
     def parameters(self):
         """
         Return the set of fitted parameters used by this expression.
@@ -183,6 +193,28 @@ class Expr(object):
     floor     = ufunc1(np.floor)
     ceil      = ufunc1(np.ceil)
     trunc     = ufunc1(np.trunc)
+
+class FiniteDiffGrad(Expr):
+    """ The gradient of an expression computed by finite difference """
+    def __init__(self, expr):
+        self.expr = expr
+
+    def evaluate(self, params, **user_args):
+        f0 = expr.evaluate(params, **user_args)
+        grad = np.empty(len(params))
+        h = 1e-10 # TODO: Be less dumb
+        for i in range(len(params)):
+            p1 = params[:]
+            p1[i] += h
+            f1 = expr.evaluate(p1, **user_args)
+            grad[i] = (f1 - f0) / h
+        return grad
+
+    def parameters(self):
+        return self.expr.parameters()
+
+    def __str__(self):
+        return 'Grad(%s)' % str(self.expr)
 
 class FuncExpr(Expr):
     """
