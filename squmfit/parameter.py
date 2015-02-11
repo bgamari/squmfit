@@ -25,18 +25,27 @@ class ParameterSet(object):
     packed into/out of a parameter vector.
     """
     def __init__(self):
-        self.params = {}
+        self._params = {}
+
+    @property
+    def params(self):
+        """
+        The parameters of this parameter set.
+
+        :rtype: dict from parameter name to :class:`FittedParam`
+        """
+        return self._params
 
     def __getitem__(self, name):
-        return self.params[name]
+        return self._params[name]
 
     def param_names(self):
-        return self.params.keys()
+        return self._params.keys()
 
     def _unused_name(self):
         """ Generate an unused parameter name """
         i = 0
-        used = self.params.keys()
+        used = self._params.keys()
         while True:
             name = 'param%d' % i
             if name not in used:
@@ -45,16 +54,16 @@ class ParameterSet(object):
 
     def initial_params(self):
         return {name: param.initial
-                for name, param in self.params.items()}
+                for name, param in self._params.items()}
 
     def param(self, name=None, initial=None):
         if name is not None:
-            assert name not in self.params.keys()
+            assert name not in self._params.keys()
         else:
             name = self._unused_name()
-        idx = len(self.params)
+        idx = len(self._params)
         param = FittedParam(idx, name, initial)
-        self.params[name] = param
+        self._params[name] = param
         return param
 
     def _pack(self, values):
@@ -62,9 +71,9 @@ class ParameterSet(object):
         Pack a set of parameter values (given as a dictionary) into a
         vector.
         """
-        unset = set(self.params.keys())
-        accum = np.empty(shape=len(self.params), dtype='f8')
-        for name, param in self.params.iteritems():
+        unset = set(self._params.keys())
+        accum = np.empty(shape=len(self._params), dtype='f8')
+        for name, param in self._params.iteritems():
             if values[name] is None:
                 continue
             accum[param.idx] = values[name]
@@ -78,8 +87,8 @@ class ParameterSet(object):
         """
         Unpack a parameter vector into a dictionary of parameter values.
         """
-        if len(values) != len(self.params):
+        if len(values) != len(self._params):
             raise RuntimeError("This parameter set has %d parameters, the given vector has %d." %
-                               (len(self.params), len(values)))
+                               (len(self._params), len(values)))
         return {name: values[param.idx]
-                for name, param in self.params.iteritems()}
+                for name, param in self._params.iteritems()}
