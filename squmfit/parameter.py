@@ -1,6 +1,6 @@
 from __future__ import division
 import numpy as np
-from .expr import Expr
+from .expr import Expr, Constant
 
 class FittedParam(Expr):
     """ A parameter to be fitted to data. """
@@ -16,6 +16,11 @@ class FittedParam(Expr):
 
     def parameters(self):
         return set([self])
+
+    def gradient(self):
+        arr = np.zeros(len(self.param_set.params))
+        arr[self.idx] = 1
+        return Constant(arr)
 
     def __str__(self):
         return 'Parameter(%s)' % self.name
