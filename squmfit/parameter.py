@@ -4,8 +4,9 @@ from .expr import Expr
 
 class FittedParam(Expr):
     """ A parameter to be fitted to data. """
-    def __init__(self, idx, name=None, initial=None):
+    def __init__(self, param_set, idx, name=None, initial=None):
         # these shalln't be mutated
+        self.param_set = param_set
         self.idx = idx
         self.name = name
         self.initial = initial
@@ -62,7 +63,7 @@ class ParameterSet(object):
         else:
             name = self._unused_name()
         idx = len(self._params)
-        param = FittedParam(idx, name, initial)
+        param = FittedParam(self, idx, name, initial)
         self._params[name] = param
         return param
 
