@@ -87,6 +87,9 @@ class Expr(object):
         """
         return FuncExpr(f, self)
 
+    def __getitem__(self, k):
+        return OpExpr(operator.getitem, self, k)
+
     def __neg__(self):
         return OpExpr(operator.neg, self)
 
