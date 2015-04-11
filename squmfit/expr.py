@@ -267,8 +267,8 @@ class FuncExpr(Expr):
 
     def __str__(self):
         args = [str(arg) for arg in self.args]
-        kwargs = ['%s=%s' % (k, str(v)) for k,v in self.kwargs]
-        return "%s(%s)" % (self.op.__name__, ', '.join(args, kwargs))
+        kwargs = ['%s=%s' % (k, str(v)) for k,v in self.kwargs.items()]
+        return "%s(%s)" % (self.func.__name__, ', '.join(args + kwargs))
 
 class OpExpr(Expr):
     """ A helper used by arithmetic operations """
