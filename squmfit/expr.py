@@ -219,6 +219,14 @@ class FiniteDiffGrad(Expr):
     def __str__(self):
         return 'Grad(%s)' % str(self.expr)
 
+class EvaluationError(Exception):
+    def __init__(self, expr, inner):
+        self.expr = expr
+        self.inner = inner
+
+    def __str__(self):
+        return "Encountered error during evaluation of %s:\n %s" % (self.expr, self.inner)
+
 class FuncExpr(Expr):
     """
     An expression which calls a function.
@@ -251,9 +259,12 @@ class FuncExpr(Expr):
                 return value.evaluate(params, **user_args)
             else:
                 return value
-        eval_args = map(eval_term, self.args)
-        eval_kwargs = {k: eval_term(v) for k,v in self.kwargs.iteritems()}
-        return self.func(*eval_args, **eval_kwargs)
+        try:
+            eval_args = map(eval_term, self.args)
+            eval_kwargs = {k: eval_term(v) for k,v in self.kwargs.iteritems()}
+            return self.func(*eval_args, **eval_kwargs)
+        except Exception as e:
+            raise EvaluationError(self, e)
 
     def parameters(self):
         accum = set()
