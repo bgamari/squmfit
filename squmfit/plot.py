@@ -52,10 +52,11 @@ def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None,
     ax_fits.set_xlim(range[0], range[1])
 
     for curve in result.curves.values():
-        pts_artist, fit_artist = plot_curve(x, curve, xscale=xscale, axes=ax_fits, errorbars=errorbars)
+        pts_artist, fit_artist = plot_curve(x, curve, xscale=xscale, axes=ax_fits,
+                                            errorbars=errorbars, range=range)
         if ax_residuals is not None:
             plot_curve_residuals(x, curve, xscale=xscale, axes=ax_residuals, abs_residuals=abs_residuals,
-                                 c=pts_artist.lines[0].get_color())
+                                 c=pts_artist.lines[0].get_color(), range=range)
 
     ax_legend = gs[0:1, 1]
     ax_fits.legend(loc='upper left',
