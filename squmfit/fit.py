@@ -308,10 +308,24 @@ class FitResult(object):
     def __init__(self, fit, params, covar_p=None, initial_result=None):
         self._fit = fit
         self._initial = initial_result
-        self._params = params
+        self._params = params  # unpacked
         self._curves = {curve.name: CurveResult(self, curve)
                         for curve in fit._curves}
         self._covar_p = covar_p
+
+    def eval(self, expr):
+        """
+        Evaluate the given :class:`Expr` against the fitted parameter values.
+
+        :type expr: :class:`Expr`
+        :param expr: The expression to evaluate.
+        :returns: The evaluation of ``expr``
+        """
+        if isinstance(expr, Expr):
+            packed = self.fit.param_set._pack(self.params)
+            return expr.evaluate(packed)
+        else:
+            return expr
 
     @property
     def fit(self):
