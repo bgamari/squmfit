@@ -210,6 +210,54 @@ class Fit(object):
         fit = FitResult(deepcopy(self), params, cov_p, initial_result=fit0)
         return fit
 
+class BoundedFit(Fit):
+    """
+    A fit configuration which supports optimization over a bounded parameter space.
+
+    Internally this uses the more flexible :func:`scipy.optimize.minimize` to
+    perform the optimzation, in contrast to :class:`Fit` which uses
+    :func:`scipy.optimize.leastsq`.
+    """
+    def fit(self, params0=None, bounds={}, method='L-BFGS-B', **user_args):
+        """
+        Carry out the fit
+
+        :type params0: dict, param_name -> float
+        :param params0: The initial parameter values.
+
+        :type user_args: kwargs
+        :param user_args: Keyword arguments passed to the model.
+
+        :type bounds: dict, param_name -> (min,max)
+        :param bounds: Parameter minimum and maximum bounds.
+
+        :rtype: A :class:`FitResults` object.
+        """
+
+        unpacked = self.param_set.initial_params()
+        if params0 is not None:
+            unpacked.update(params0)
+        packed0 = self.param_set._pack(unpacked)
+        def fit_func(p):
+            res = self.residuals_packed(p, **user_args)
+            res = np.hstack(res.values())
+            return np.sum(res**2)
+
+        if len(bounds) == 0:
+            bounds = None
+        else:
+            bounds = [bounds.get(p, (None, None)) for p in self.param_set.param_names]
+
+        result = scipy.optimize.minimize(fit_func, packed0,
+                                         method=method,
+                                         bounds=bounds)
+        cov_p = None
+        params = self.param_set._unpack(result.x)
+        initial = self.param_set._unpack(packed0)
+        fit0 = FitResult(deepcopy(self), initial)
+        fit = FitResult(deepcopy(self), params, cov_p, initial_result=fit0)
+        return fit
+
 class CurveResult(object):
     """
     This embodies a set of parameter values describing the
