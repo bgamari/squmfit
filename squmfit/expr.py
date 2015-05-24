@@ -2,6 +2,7 @@ from __future__ import division
 import operator
 import numpy as np
 import scipy.optimize
+import six
 
 def model(func):
     """
@@ -261,7 +262,7 @@ class FuncExpr(Expr):
                 return value
         try:
             eval_args = map(eval_term, self.args)
-            eval_kwargs = {k: eval_term(v) for k,v in self.kwargs.iteritems()}
+            eval_kwargs = {k: eval_term(v) for k,v in six.iteritems(self.kwargs)}
             return self.func(*eval_args, **eval_kwargs)
         except Exception as e:
             raise EvaluationError(self, e)

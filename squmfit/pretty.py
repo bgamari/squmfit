@@ -28,7 +28,7 @@ def markdown_fit_result(result, min_corr=0.5):
                    for param1 in result.params.keys()
                    for param2 in result.params.keys()
                    if param1 < param2}
-        for (p1,p2), c in sorted(correls.items(), key=lambda ((a,b),c): c, reverse=True):
+        for (p1,p2), c in sorted(correls.items(), key=lambda v: v[1], reverse=True):
             if abs(c) >= min_corr:
                 accum += '  * %-15s / %-15s       %1.2f\n' % (p1, p2, c)
 
@@ -77,7 +77,7 @@ def html_fit_result(result, min_corr=0.5):
         accum += '<table>\n'
         accum += '  <thead><tr><th>parameter</th><th>parameter</th><th>correlation</th></thead>\n'
         accum += '  <tbody>\n'
-        for (p1,p2), c in sorted(correls.items(), key=lambda ((a,b),c): c, reverse=True):
+        for (p1,p2), c in sorted(correls.items(), key=lambda v: v[1], reverse=True):
             if abs(c) >= min_corr:
                 hue = 0 if c < 0 else 142
                 lightness = 100 - 30 * abs(c)
