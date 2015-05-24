@@ -1,6 +1,7 @@
 from __future__ import division
 import numpy as np
 from .expr import Expr, Constant
+import six
 
 class FittedParam(Expr):
     """ A parameter to be fitted to data. """
@@ -79,7 +80,7 @@ class ParameterSet(object):
         """
         unset = set(self._params.keys())
         accum = np.empty(shape=len(self._params), dtype='f8')
-        for name, param in self._params.iteritems():
+        for name, param in six.iteritems(self._params):
             if values[name] is None:
                 continue
             accum[param.idx] = values[name]
@@ -97,4 +98,4 @@ class ParameterSet(object):
             raise RuntimeError("This parameter set has %d parameters, the given vector has %d." %
                                (len(self._params), len(values)))
         return {name: values[param.idx]
-                for name, param in self._params.iteritems()}
+                for name, param in six.iteritems(self._params)}
