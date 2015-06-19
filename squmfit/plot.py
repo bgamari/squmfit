@@ -7,7 +7,7 @@ from matplotlib import gridspec
 
 def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None,
              with_residuals=True, abs_residuals=False, residual_range=None,
-             legend_kwargs={}):
+             legend_kwargs={}, marker={}):
     """
     Plot the result of a fit.
 
@@ -53,7 +53,8 @@ def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None,
 
     for curve, color in zip(result.curves.values(), pl.rcParams['axes.color_cycle']):
         plot_curve(x, curve, xscale=xscale, axes=ax_fits,
-                   errorbars=errorbars, range=range, color=color)
+                   errorbars=errorbars, range=range, color=color,
+                   marker=marker)
         if ax_residuals is not None:
             plot_curve_residuals(x, curve, xscale=xscale, axes=ax_residuals, abs_residuals=abs_residuals,
                                  color=color, range=range)
