@@ -225,11 +225,15 @@ class BoundedFit(Fit):
         :type params0: dict, param_name -> float
         :param params0: The initial parameter values.
 
-        :type user_args: kwargs
-        :param user_args: Keyword arguments passed to the model.
-
         :type bounds: dict, param_name -> (min,max)
         :param bounds: Parameter minimum and maximum bounds.
+
+        :type method: str
+        :param method: Optimization method to use. See
+          :func:`scipy.optimize.minimize` for options.
+
+        :type user_args: kwargs
+        :param user_args: Keyword arguments passed to the model.
 
         :rtype: A :class:`FitResults` object.
         """
