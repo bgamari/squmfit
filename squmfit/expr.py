@@ -113,16 +113,16 @@ class Expr(object):
         return OpExpr(operator.mul, lift_term(other), self)
 
     def __truediv__(self, other):
-        return OpExpr(operator.div, self, lift_term(other))
+        return OpExpr(operator.truediv, self, lift_term(other))
 
     def __rtruediv__(self, other):
-        return OpExpr(operator.div, lift_term(other), self)
+        return OpExpr(operator.truediv, lift_term(other), self)
 
     def __div__(self, other):
-        return OpExpr(operator.div, self, lift_term(other))
+        return OpExpr(operator.floordiv, self, lift_term(other))
 
     def __rdiv__(self, other):
-        return OpExpr(operator.div, lift_term(other), self)
+        return OpExpr(operator.floordiv, lift_term(other), self)
 
     def __pow__(self, other):
         return OpExpr(operator.pow, self, lift_term(other))
