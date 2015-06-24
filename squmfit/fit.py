@@ -246,7 +246,7 @@ class BoundedFit(Fit):
         if len(bounds) == 0:
             bounds = None
         else:
-            bounds = [bounds.get(p, (None, None)) for p in self.param_set.param_names]
+            bounds = [bounds.get(p, (None, None)) for p in self.param_set.param_names()]
 
         result = scipy.optimize.minimize(fit_func, packed0,
                                          method=method,
