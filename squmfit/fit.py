@@ -201,9 +201,12 @@ class Fit(object):
             res = self.residuals_packed(p, **user_args)
             n_evals += 1
             t = time()
-            if report_progress is not None and last_call + report_progress > t:
+            if report_progress is not None and last_call + report_progress < t:
                 last_call = t
-                print('%d evaluations, Chi²=%s, Parameters: %s' % (n_evals, np.sum(res**2), self.param_set._unpack(p)))
+                print('%d evaluations, Chi²=%s' % (n_evals, np.sum(res**2)))
+                print('Parameters:')
+                print('\n'.join('  %s = %1.4g' % (k,v)
+                                for k,v in sorted(self.param_set._unpack(p).items())))
 
             return np.hstack(res.values())
 
@@ -273,9 +276,12 @@ class BoundedFit(Fit):
 
             n_evals += 1
             t = time()
-            if report_progress is not None and last_call + report_progress > t:
+            if report_progress is not None and last_call + report_progress < t:
                 last_call = t
-                print('%d evaluations, Chi²=%s, Parameters: %s' % (n_evals, res2, self.param_set._unpack(p)))
+                print('%d evaluations, Chi²=%s' % (n_evals, res2))
+                print('Parameters:')
+                print('\n'.join('  %s = %1.4g' % (k,v)
+                                for k,v in sorted(self.param_set._unpack(p).items())))
 
             return res2
 
