@@ -199,6 +199,7 @@ class Fit(object):
         def fit_func(p):
             nonlocal n_evals, last_call
             res = self.residuals_packed(p, **user_args)
+            res = np.hstack(res.values())
             n_evals += 1
             t = time()
             if report_progress is not None and last_call + report_progress < t:
@@ -208,7 +209,7 @@ class Fit(object):
                 print('\n'.join('  %s = %1.4g' % (k,v)
                                 for k,v in sorted(self.param_set._unpack(p).items())))
 
-            return np.hstack(res.values())
+            return res
 
         packed, cov_x, info, mesg, ier = scipy.optimize.leastsq(fit_func, packed0, full_output=True)
 
