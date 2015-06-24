@@ -2,10 +2,9 @@ from __future__ import division
 import numpy as np
 from squmfit import *
 
-def exponential_model(t, amplitude, rate):
+@model
+def exponential_decay(t, amplitude, rate):
     return amplitude * np.exp(-t * rate)
-
-ExpModel = Model(exponential_model)
 
 # Generate an exponential decay with some Gaussian additive noise
 noise_std = 0.1
@@ -13,10 +12,13 @@ xs = np.arange(4000)
 ys = 4 * np.exp(-xs / 400)
 ys += np.random.normal(scale=noise_std, size=xs.shape)
 
-# Run the fit
+# Build the fit
 fit = Fit()
-model = ExpModel(amplitude=fit.param('amp'), rate=fit.param('rate'))
+t = Argument('t')
+model = exponential_decay(t, fit.param('amp'), fit.param('rate'))
 fit.add_curve('curve1', model, ys, t=xs, weights=1/noise_std)
+
+# Run it
 res = fit.fit({'amp': 3, 'rate': 1./100})
 
 print 'parameters', res.params
