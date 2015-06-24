@@ -7,7 +7,7 @@ from matplotlib import gridspec
 
 def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None,
              with_residuals=True, abs_residuals=False, residual_range=None,
-             legend_kwargs={}, marker={}):
+             legend_kwargs={}, marker=None):
     """
     Plot the result of a fit.
 
@@ -27,6 +27,7 @@ def plot_fit(x, result, range=None, xscale='linear', errorbars=True, fig=None,
     :param abs_residuals: Whether to plot weighted (relative) or unweighted (absolute residuals).
     :type residual_range: ``(ymin, ymax)``, optional
     :param residual_range: Y range of residual plot
+    :param marker: Set the marker with which to mark points
     :param legend_kwargs: Keyword arguments passed to :func:`pl.legend`.
     """
 
