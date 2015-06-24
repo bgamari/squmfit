@@ -204,14 +204,36 @@ class FiniteDiffGrad(Expr):
         self.expr = expr
 
     def evaluate(self, params, **user_args):
+        # Parameters:
+        # Reduce step until relative chance drops below this
+        delta_thresh = 0.1
+        # Reduce step by this factor
+        alpha = 10
+
         f0 = expr.evaluate(params, **user_args)
         grad = np.empty(len(params))
-        h = 1e-10 # TODO: Be less dumb
+
         for i in range(len(params)):
-            p1 = params[:]
-            p1[i] += h
-            f1 = expr.evaluate(p1, **user_args)
-            grad[i] = (f1 - f0) / h
+            # Start with a reasonable step size
+            h = abs(params[i]) / 10
+            g0 = 1/0
+            while h:
+                p1 = params[:]
+                p1[i] += h
+                f1 = expr.evaluate(p1, **user_args)
+
+                g = (f1 - f0) / h
+                if abs(g - g0) < g * thresh:
+                    grad[i] = g1
+                    break
+                else:
+                    h /= alpha
+                    g0 = g
+
+                if h < 1e-12:
+                    grad[i] = 0
+                    break
+
         return grad
 
     def parameters(self):
