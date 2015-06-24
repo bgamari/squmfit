@@ -4,6 +4,7 @@ import numpy as np
 import scipy.optimize
 from .parameter import ParameterSet
 from .expr import Expr
+from time import time
 
 class Curve(object):
     def __init__(self, name, model, data, weights=None, **user_args):
@@ -173,12 +174,15 @@ class Fit(object):
         """
         return self.residuals_packed(self.param_set._pack(params), weighted, **user_args)
 
-    def fit(self, params0=None, **user_args):
+    def fit(self, params0=None, report_progress=None, **user_args):
         """
         Carry out the fit.
 
         :type params0: dict, param_name -> float
         :param params0: The initial parameter values.
+
+        :type report_progress: float or None
+        :param report_progress: Period with which to report on fit progress (in seconds).
 
         :type user_args: kwargs
         :param user_args: Keyword arguments passed to the model.
@@ -189,14 +193,26 @@ class Fit(object):
         if params0 is not None:
             unpacked.update(params0)
         packed0 = self.param_set._pack(unpacked)
+
+        last_call = time()
+        n_evals = 0
         def fit_func(p):
+            nonlocal n_evals, last_call
             res = self.residuals_packed(p, **user_args)
+            n_evals += 1
+            t = time()
+            if report_progress is not None and last_call + report_progress > t:
+                last_call = t
+                print('%d evaluations, Chi²=%s, Parameters: %s' % (n_evals, np.sum(res**2), self.param_set._unpack(p)))
+
             return np.hstack(res.values())
+
         packed, cov_x, info, mesg, ier = scipy.optimize.leastsq(fit_func, packed0, full_output=True)
 
         def unpack_covar(matrix):
             return {name: self.param_set._unpack(inner)
                     for name, inner in self.param_set._unpack(matrix).items()}
+
         if cov_x is None:
             cov_p = None
         else:
@@ -204,6 +220,7 @@ class Fit(object):
             npts = sum(len(curve.data) for curve in self._curves)
             red_chisq = np.sum(info['fvec']**2) / (npts - nparams)
             cov_p = unpack_covar(cov_x * red_chisq)
+
         params = self.param_set._unpack(packed)
         initial = self.param_set._unpack(packed0)
         fit0 = FitResult(deepcopy(self), initial)
@@ -218,7 +235,7 @@ class BoundedFit(Fit):
     perform the optimzation, in contrast to :class:`Fit` which uses
     :func:`scipy.optimize.leastsq`.
     """
-    def fit(self, params0=None, bounds={}, method='L-BFGS-B', **user_args):
+    def fit(self, params0=None, bounds={}, method='L-BFGS-B', report_progress=None, **user_args):
         """
         Carry out the fit
 
@@ -232,6 +249,9 @@ class BoundedFit(Fit):
         :param method: Optimization method to use. See
           :func:`scipy.optimize.minimize` for options.
 
+        :type report_progress: float or None
+        :param report_progress: Period with which to report on fit progress (in seconds).
+
         :type user_args: kwargs
         :param user_args: Keyword arguments passed to the model.
 
@@ -242,10 +262,22 @@ class BoundedFit(Fit):
         if params0 is not None:
             unpacked.update(params0)
         packed0 = self.param_set._pack(unpacked)
+
+        last_call = time()
+        n_evals = 0
         def fit_func(p):
+            nonlocal n_evals, last_call
             res = self.residuals_packed(p, **user_args)
             res = np.hstack(res.values())
-            return np.sum(res**2)
+            res2 = np.sum(res**2)
+
+            n_evals += 1
+            t = time()
+            if report_progress is not None and last_call + report_progress > t:
+                last_call = t
+                print('%d evaluations, Chi²=%s, Parameters: %s' % (n_evals, res2, self.param_set._unpack(p)))
+
+            return res2
 
         if len(bounds) == 0:
             bounds = None
