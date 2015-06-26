@@ -160,7 +160,9 @@ Inspecting fit results
 Functional interpretation
 -------------------------
 
-The architecture of ``squmfit`` is inspired by patterns used widely in
-Haskell and other functional languages. The :class:`Expr` class is an
-applicative functor and reader monad having access to an environment
-containing packed parameter values.
+The design of ``squmfit`` is largely inspired by patterns introduced to the
+author by the functional programming community. If one is so inclined it can be
+useful to think of :class:`Expr` as an reader applicative having access to an
+environment containing packed parameter values. Composition is standard function
+composition. The :func:`Expr.map` function provides functorial map. Functions
+can also be lifted with the :func:`model` decorator.
