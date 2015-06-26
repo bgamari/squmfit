@@ -14,7 +14,7 @@ setup(
     name = "squmfit",
     description = "Convenient non-linear least squares fitting",
     long_description = long_description,
-    version = "0.1",
+    version = "0.2",
     author = 'Ben Gamari',
     author_email = 'ben@smart-cactus.org',
     url = 'http://github.com/bgamari/squmfit',
