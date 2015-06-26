@@ -92,6 +92,11 @@ class Expr(object):
     def map(self, f):
         """
         Lift a function into an :class:`Expr`.
+
+        :type f: Function of type `A -> B`
+        :param f: The function to lift.
+        :returns: Given an :class:`Expr` evaulating to a value of type `A` and a function `A -> B`,
+          returns an :class:`Expr` of type `B`.
         """
         return FuncExpr(f, self)
 
