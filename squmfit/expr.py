@@ -25,8 +25,7 @@ def model(func):
         else:
             return func(*args, **kwargs)
 
-    if _use_numpy_docs:
-        go.__doc__  = func.__doc__.split('\n\n')[1]
+    go.__doc__  = func.__doc__
     return go
 
 def lift_term(value):
@@ -42,7 +41,7 @@ def ufunc1(func):
         return OpExpr(func, x)
 
     if _use_numpy_docs:
-        go.__doc__ = func.__doc__
+        go.__doc__ = func.__doc__.split('\n\n')
     return go
 
 def ufunc2(func):
