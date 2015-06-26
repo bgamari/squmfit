@@ -107,9 +107,9 @@ quantitative summary of the fit. For instance,
 document describing the fit parameters and various goodness-of-fit
 metrics. If you use IPython Notebook,
 :func:`squmfit.pretty.ipynb_fit_result` can be used to generate a
-presentation that can be rendered in rich HTML within the notebook,
+presentation that can be rendered in rich HTML within the notebook.
 
-Finally, :mod:`squmfit.plot` can be used to plot fits and residuals.
+Finally, :func:`squmfit.plot.plot_fit` can be used to plot fits and residuals.
 
 
 How does it work?
