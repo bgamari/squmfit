@@ -50,8 +50,7 @@ Let's say that we have a exponential decay with Poissonian noise,
     >>> ys = np.random.poisson(400 * np.exp(-xs / 400.))
 
 We first define the functional form which we believe describes our
-data (or use one of the models provided in the :mod:`squmfit.models`
-module),
+data,
 
     >>> import squmfit
     >>> def exponential_model(t, amplitude, rate):
