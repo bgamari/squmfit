@@ -26,7 +26,7 @@ def model(func):
             return func(*args, **kwargs)
 
     if _use_numpy_docs:
-        go.__doc__  = func.__doc__
+        go.__doc__  = func.__doc__.split('\n\n')[1]
     return go
 
 def lift_term(value):
@@ -56,7 +56,7 @@ class Expr(object):
     """
     An expression capable of taking parameters from a packed parameter
     vector. All of the usual Python arithmetic operations are
-    supported as well as a good fraction of the Numpy ufuncs. Note,
+    supported as well as a good fraction of the Numpy ``ufuncs``. Note,
     however, that the ufuncs' ``out`` parameter is not supported.
     """
 
