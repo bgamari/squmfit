@@ -119,11 +119,10 @@ How does it work?
 Expressions in ``squmfit`` are represented by the :class:`Expr`
 class. An ``Expr`` captures an abstract syntax tree that describes
 *how* a result can be computed. The elementary expressions could
-represent a fitted parameter (e.g. ``amp``) in the example above, or
+represent a fitted parameter (e.g. ``amp`` in the example above), or
 an expression depending upon a fitted parameter. The ``Expr`` class
 implements basic arithmetic operations (e.g. ``__add__``) and numpy's
-ufuncs (e.g. ``sqrt``), allowing it to be treated as a standard
-scalar.
+ufuncs (e.g. ``sqrt``), allowing it to be treated as a scalar or an array.
 
 Of course, some functions require more structure beyond the operations
 supported by ``Expr`` evaluate their result. In this case, you can
@@ -134,6 +133,11 @@ decorator,
     >>> @squmfit.model
     >>> def sum_odds(vec):
     >>>     return vec[1::2].sum()
+
+In this case, we could invoke ``sum_odds`` with an :class:`Expr`,
+which ``squmfit`` would automatically evaluate. It would then evaluate
+``sum_odds`` with the value of the expression, and pack the result back into an
+:class:`Expr`.
 
 .. autofunction:: squmfit.model
    :noindex:
