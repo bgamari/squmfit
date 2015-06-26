@@ -4,6 +4,11 @@ import numpy as np
 import scipy.optimize
 import six
 
+# While taking the docstrings from numpy's ufuncs looks good on paper,
+# in practice these functions are sometimes provided by mock and therefore less
+# than helpful
+_use_numpy_docs = False
+
 def model(func):
     """
     Transforms a function to ensure that all of its parameters are
@@ -20,7 +25,8 @@ def model(func):
         else:
             return func(*args, **kwargs)
 
-    go.__doc__  = func.__doc__
+    if _use_numpy_docs:
+        go.__doc__  = func.__doc__
     return go
 
 def lift_term(value):
@@ -34,7 +40,9 @@ def ufunc1(func):
         if out is not None:
             raise ValueError("squmfit.Expr ufuncs don't support output arrays")
         return OpExpr(func, x)
-    go.__doc__ = func.__doc__
+
+    if _use_numpy_docs:
+        go.__doc__ = func.__doc__
     return go
 
 def ufunc2(func):
