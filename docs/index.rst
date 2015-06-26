@@ -163,6 +163,9 @@ Functional interpretation
 The design of ``squmfit`` is largely inspired by patterns introduced to the
 author by the functional programming community. If one is so inclined it can be
 useful to think of :class:`Expr` as an reader applicative having access to an
-environment containing packed parameter values. Composition is standard function
-composition. The :func:`Expr.map` function provides functorial map. Functions
-can also be lifted with the :func:`model` decorator.
+environment of packed parameter values. Composition is standard function
+composition. Pure values can be lifted with the :class:`squmfit.expr.Constant`
+class although this is rarely explicitly needed as pure values are automatically
+lifted by the operations of :class:`Expr`. The :func:`Expr.map` function
+provides functorial map. Functions can also be lifted with the :func:`model`
+decorator.

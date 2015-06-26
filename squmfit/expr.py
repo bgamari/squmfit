@@ -213,6 +213,12 @@ class Expr(object):
 class FiniteDiffGrad(Expr):
     """ The gradient of an expression computed by finite difference """
     def __init__(self, expr):
+        """
+        Create an expression representing the gradient of an expression.
+
+        :type expr: :class:`Expr`
+        :param expr: The expression to differentiate.
+        """
         self.expr = expr
 
     def evaluate(self, params, **user_args):
@@ -334,8 +340,13 @@ class OpExpr(Expr):
         return "%s(%s)" % (self.op.__name__, ', '.join(str(o) for o in self.operands))
 
 class Constant(Expr):
-    """ An :class:`Expr` which always evaluates to the given value """
+    """ An :class:`Expr` containing a constant value """
     def __init__(self, value):
+        """
+        Create a constant-valued :class:`Expr`
+
+        :param value: The value
+        """
         self.value = value
 
     def evaluate(self, params, **user_args):
