@@ -104,10 +104,10 @@ fit values.
 ``squmfit`` has a variety of options for presenting the results of a
 fit. :mod:`squmfit.pretty` has several utilities for producing a
 quantitative summary of the fit. For instance,
-:function:`squmfit.pretty.markdown_fit_result` will produce a Markdown
+:func:`squmfit.pretty.markdown_fit_result` will produce a Markdown
 document describing the fit parameters and various goodness-of-fit
 metrics. If you use IPython Notebook,
-:function:`squmfit.pretty.ipynb_fit_result` can be used to generate a
+:func:`squmfit.pretty.ipynb_fit_result` can be used to generate a
 presentation that can be rendered in rich HTML within the notebook,
 
 Finally, :mod:`squmfit.plot` can be used to plot fits and residuals.
