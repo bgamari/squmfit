@@ -11,6 +11,8 @@ The :class:`Expr` class
 
 .. autoclass:: Expr
    :members:
+   :member-order: bysource
+
 
 Evaluating Exprs
 ~~~~~~~~~~~~~~~~
