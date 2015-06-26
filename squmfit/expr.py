@@ -7,7 +7,7 @@ import six
 # While taking the docstrings from numpy's ufuncs looks good on paper,
 # in practice these functions are sometimes provided by mock and therefore less
 # than helpful
-_use_numpy_docs = False
+_use_numpy_docs = True
 
 def model(func):
     """
