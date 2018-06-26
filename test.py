@@ -21,9 +21,9 @@ fit.add_curve('curve1', model, ys, t=xs, weights=1/noise_std)
 # Run it
 res = fit.fit({'amp': 3, 'rate': 1./100})
 
-print 'parameters', res.params
-print 'covariance', res.covar
-print 'reduced chi-squared', res.curves['curve1'].reduced_chi_sqr
+print('parameters', res.params)
+print('covariance', res.covar)
+print('reduced chi-squared', res.curves['curve1'].reduced_chi_sqr)
 
 from matplotlib import pyplot as pl
 pl.plot(xs, ys)
